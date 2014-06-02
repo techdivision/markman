@@ -36,12 +36,30 @@ class MarkmanTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
-     * Test if the constructor created an instance of the rewrite module.
+     * The loader
+     *
+     * @var \TechDivision\Markman\Loader
+     */
+    protected $loader;
+
+    /**
+     * Initializes what we need for our tests
+     *
+     * @return void
+     */
+    public function setUp()
+    {
+        $this->loader = new Loader();
+    }
+
+    /**
+     * Test if the constructor created an instance of main classes.
      *
      * @return void
      */
     public function testInstanceOf()
     {
-        $this->assertInstanceOf('\TechDivision\RewriteModule\RewriteModule', $this->rewriteModule);
+
+        $this->assertInstanceOf('\TechDivision\Markman\Loader', $this->loader);
     }
 }
