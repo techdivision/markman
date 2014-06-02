@@ -1,0 +1,23 @@
+{
+    "name": "techdivision/markman",
+    "description": "A simple framework to grab markdown documentation from github and provide it as html",
+    "keywords": ["markdown", "documentation", "md", "html"],
+    "homepage": "https://github.com/techdivision/markman",
+    "license": ["OSL-3.0"],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.4.0",
+        "erusev/parsedown": "*",
+        "knplabs/github-api": "*"
+    },
+    "autoload": {
+        "psr-0": {
+            "TechDivision": ["src/", "tests/"]
+        }
+    },
+    "config": {
+        "github-oauth": {
+            "github.com": "604a3b5943228e434a5b52c2ba3cf72286d30db9"
+        }
+    }
+}
