@@ -49,7 +49,7 @@ class MarkmanTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->loader = new Loader();
+        $this->loader = new Loader('github', 'techdivision/TechDivision_AppserverDocumentation');
     }
 
     /**
@@ -59,7 +59,6 @@ class MarkmanTest extends \PHPUnit_Framework_TestCase
      */
     public function testInstanceOf()
     {
-
         $this->assertInstanceOf('\TechDivision\Markman\Loader', $this->loader);
     }
 }

@@ -19,10 +19,13 @@
 
 namespace TechDivision\Markman;
 
+// Let's get our autoloader
+require_once '../../../vendor/autoload.php';
+
 /**
  * TechDivision\Markman\Cli
  *
- * <TODO CLASS DESCRIPTION>
+ * Class to provide a simple command line interface
  *
  * @category   Tools
  * @package    TechDivision
@@ -35,6 +38,53 @@ namespace TechDivision\Markman;
 class Cli
 {
 
+    /**
+     * @var Loader $loader <REPLACE WITH FIELD COMMENT>
+     */
+    protected $loader;
+
+    protected $compiler;
+
+    /**
+     *
+     */
+    public function __construct()
+    {
+        $name = 'appserver.io';
+        $pathModifier = 'docs';
+
+        $this->loader = new Loader('github', 'techdivision/TechDivision_AppserverDocumentation');
+        $this->compiler = new Compiler();
+
+        // Get all possible versions
+        $versions = array();
+        $versions = $this->loader->getVersions();
+
+        // Iterate over all versions and get content
+        $docs = array();
+        foreach ($versions as $version) {
+
+            $docs[$version->getName()] = $this->loader->getDocByVersion($version);
+        }
+
+        // Lets unpack the docs one by one and hand them to the compiler
+        foreach ($docs as $version => $tmpFile) {
+
+            // Collect what we need and hand it to the compiler
+            $this->compiler->compile(
+                $tmpFile,
+                $this->loader->getSystemPathModifier(),
+                $name . DIRECTORY_SEPARATOR . $version
+            );
+        }
+
+
+
+        // Clean the tmp dir
+
+    }
 }
+
+$cli = new Cli();
 
  

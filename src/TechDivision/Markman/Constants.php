@@ -8,7 +8,7 @@
  *
  * PHP version 5
  *
- * @category   Tools
+ * @category   Appserver
  * @package    TechDivision
  * @subpackage Markman
  * @author     Bernhard Wick <b.wick@techdivision.com>
@@ -19,15 +19,12 @@
 
 namespace TechDivision\Markman;
 
-use TechDivision\Markman\Handler\GithubHandler;
-
-
 /**
- * TechDivision\Markman\Loader
+ * TechDivision\Markman\Structure
  *
- * Will load the a certain repository from github
+ * <TODO CLASS DESCRIPTION>
  *
- * @category   Tools
+ * @category   Appserver
  * @package    TechDivision
  * @subpackage Markman
  * @author     Bernhard Wick <b.wick@techdivision.com>
@@ -35,39 +32,14 @@ use TechDivision\Markman\Handler\GithubHandler;
  * @license    http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
  * @link       http://www.techdivision.com/
  */
-class Loader
+class Constants
 {
-    /**
-     * @var Handler\GithubHandler $handler <REPLACE WITH FIELD COMMENT>
-     */
-    protected $handler;
+//@todo make this relative
+    const TMP_PATH = '/Users/wickb/Workspace/markman/tmp';
 
-    /**
-     * @param $api
-     */
-    public function __construct($api, $handlerString)
-    {
-        $this->handler = new GithubHandler();
-        $this->handler->connect($handlerString);
-    }
+    const BUILD_PATH = '/Users/wickb/Workspace/markman/build';
 
-    /**
-     *
-     */
-    public function getVersions()
-    {
-        return $this->handler->getVersions();
-    }
-
-    public function getDocByVersion($version)
-    {
-        return $this->handler->getDocByVersion($version);
-    }
-
-    public function getSystemPathModifier()
-    {
-        return $this->handler->getSystemPathModifier();
-    }
+    const CURRENT_VERSION_NAME = 'current';
 }
 
  
