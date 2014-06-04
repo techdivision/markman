@@ -51,6 +51,8 @@ class GithubHandler extends AbstractHandler
 
     const PROVIDER_HOST = 'https://github.com';
 
+    const CURRENT_VERSION_NAME = 'master';
+
     /**
      *
      */
@@ -68,6 +70,11 @@ class GithubHandler extends AbstractHandler
         list($this->user, $this->project) = explode(self::HANDLE_STRING_DELIMETER, $handlerString);
     }
 
+    public function getCurrentVersionName()
+    {
+        return self::CURRENT_VERSION_NAME;
+    }
+
     /**
      * @return array
      */
@@ -78,8 +85,8 @@ class GithubHandler extends AbstractHandler
         // First version of all is always current one
         $versions = array(
             new Version(
-                Constants::CURRENT_VERSION_NAME,
-                self::PROVIDER_HOST . '/' . $this->user . '/' . $this->project . '/archive/master.zip')
+                self::CURRENT_VERSION_NAME,
+                self::PROVIDER_HOST . '/' . $this->user . '/' . $this->project . '/archive/' . self::CURRENT_VERSION_NAME . '.zip')
         );
 
         // Begin iteration
@@ -131,10 +138,12 @@ class GithubHandler extends AbstractHandler
     }
 
     /**
+     * @param string $version
+     *
      * @return string
      */
-    public function getSystemPathModifier()
+    public function getSystemPathModifier($version)
     {
-        return $this->project . '-' . $this->branch;
+        return $this->project . '-' . $version;
     }
 }

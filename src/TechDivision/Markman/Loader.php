@@ -80,14 +80,22 @@ class Loader
         return $this->handler->getVersions();
     }
 
+    /**
+     * @param $version
+     * @return string
+     */
     public function getDocByVersion($version)
     {
         return $this->handler->getDocByVersion($version);
     }
 
-    public function getSystemPathModifier()
+    /**
+     * @param $param
+     * @return string
+     */
+    public function getSystemPathModifier($param)
     {
-        return $this->handler->getSystemPathModifier();
+        return $this->handler->getSystemPathModifier($param);
     }
 }
 
