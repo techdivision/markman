@@ -47,13 +47,24 @@ class Compiler
     protected $allowedExtensions;
 
     /**
+     * @var  $preservedExtensions <REPLACE WITH FIELD COMMENT>
+     */
+    protected $preservedExtensions;
+
+    protected $config;
+
+    /**
      *
      */
-    public function __construct()
+    public function __construct(Config $config)
     {
+        $this->config = $config;
+
         $this->compiler = new \Parsedown();
 
         $this->allowedExtensions = array_flip(array('md', 'markdown'));
+
+        $this->preservedExtensions = array_flip(array('png', 'jpg', 'jpeg', 'svg', 'css', 'html', 'phtml'));
     }
 
     /**
@@ -73,29 +84,47 @@ class Compiler
             $path = $path . DIRECTORY_SEPARATOR . $pathModifier;
         }
 
+        // Get an iterator over the part of the directory we want
         $iterator = $this->getDirectoryIterator(array($path));
 
         // Compile all the files
         $fileUtil = new File();
         foreach ($iterator as $file) {
 
-            // If the file has the wrong extension we do not need to compile it
-            if (!isset($this->allowedExtensions[$file->getExtension()])) {
+            // Get the content of the file
+            $rawContent = file_get_contents($file);
+
+            // Create the name of the target file
+            $targetFile = str_replace($path, '', $file);
+
+            // If the file has a markdown extension we will compile it, if it is something we have to preserve we
+            // will do so, if not we will skip it
+            if (isset($this->allowedExtensions[$file->getExtension()])) {
+
+                $rawContent = $this->compiler->text($rawContent);
+                $targetFile = str_replace($file->getExtension(), 'html', $targetFile);
+
+            } elseif (!isset($this->preservedExtensions[strtolower($file->getExtension())])) {
 
                 continue;
             }
 
-            $rawContent = file_get_contents($file);
+            // Apply any name mapping there might be
+            if (count($this->config->getFileMapping()) > 0) {
+
+                // Split up the mapping and apply it
+                $haystacks = array_keys($this->config->getFileMapping());
+                $targetFile = str_replace($haystacks, $this->config->getFileMapping(), $targetFile);
+            }
+
+            // Save the processed (or not) content to a file.
+            // Recreate the path the file originally had
             $fileUtil->fileForceContents(
-                Constants::BUILD_PATH . DIRECTORY_SEPARATOR . $filePrefix . DIRECTORY_SEPARATOR . str_replace(
-                    $path,
-                    '',
-                    $file
-                ),
-                $this->compiler->text($rawContent)
+                Constants::BUILD_PATH . DIRECTORY_SEPARATOR . $filePrefix . DIRECTORY_SEPARATOR .
+                $targetFile,
+                $rawContent
             );
         }
-
     }
 
     /**

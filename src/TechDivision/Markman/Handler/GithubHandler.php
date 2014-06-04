@@ -76,15 +76,19 @@ class GithubHandler extends AbstractHandler
         $rawVersions = $this->client->api('repo')->tags($this->user, $this->project);
 
         // First version of all is always current one
-        $versions = array(new Version(
-            Constants::CURRENT_VERSION_NAME,
-            self::PROVIDER_HOST . '/' . $this->user .  '/' . $this->project . '/archive/master.zip')
+        $versions = array(
+            new Version(
+                Constants::CURRENT_VERSION_NAME,
+                self::PROVIDER_HOST . '/' . $this->user . '/' . $this->project . '/archive/master.zip')
         );
 
         // Begin iteration
         foreach ($rawVersions as $rawVersion) {
 
-            $versions[] = new Version($rawVersion['name'], $rawVersion['zipball_url']);
+            $versions[] = new Version(
+                $rawVersion['name'],
+                self::PROVIDER_HOST . '/' . $this->user . '/' . $this->project . '/archive/' . $rawVersion['name'] . '.zip'
+            );
         }
 
         return $versions;
@@ -126,6 +130,9 @@ class GithubHandler extends AbstractHandler
         return $targetDir;
     }
 
+    /**
+     * @return string
+     */
     public function getSystemPathModifier()
     {
         return $this->project . '-' . $this->branch;

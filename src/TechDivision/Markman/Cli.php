@@ -53,8 +53,14 @@ class Cli
         $name = 'appserver.io';
         $pathModifier = 'docs';
 
-        $this->loader = new Loader('github', 'techdivision/TechDivision_AppserverDocumentation');
-        $this->compiler = new Compiler();
+        // Prepare the configuration
+        $config = new Config();
+        $config->setFileMapping(array('README' => 'index'));
+        $config->setSource('github');
+        $config->setHandlerString('techdivision/TechDivision_AppserverDocumentation');
+
+        $this->loader = new Loader($config);
+        $this->compiler = new Compiler($config);
 
         // Get all possible versions
         $versions = array();

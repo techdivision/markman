@@ -43,12 +43,33 @@ class Loader
     protected $handler;
 
     /**
-     * @param $api
+     * @param Config $config
+     *
+     * @throws \Exception
      */
-    public function __construct($api, $handlerString)
+    public function __construct(Config $config)
     {
-        $this->handler = new GithubHandler();
-        $this->handler->connect($handlerString);
+        // Check if we got what we need
+        if (strlen($config->getHandlerString()) === 0 || strlen($config->getSource()) === 0 ) {
+
+            throw new \Exception('Missing critical loader configuration. Requires at least "source" and "handlerString".');
+        }
+
+        // Check if we got a usable handler
+        switch ($config->getSource()) {
+
+            case 'github':
+
+                $this->handler = new GithubHandler();
+                break;
+
+            default:
+
+                throw new \Exception('Missing handler for documentation source ' . $config->getSource());
+        }
+
+        // Connect the handler
+        $this->handler->connect($config->getHandlerString());
     }
 
     /**
