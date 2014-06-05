@@ -22,7 +22,7 @@ namespace TechDivision\Markman;
 /**
  * TechDivision\Markman\Structure
  *
- * <TODO CLASS DESCRIPTION>
+ * Will hold some basic constants which are used throughout the library
  *
  * @category   Appserver
  * @package    TechDivision
@@ -40,6 +40,12 @@ class Constants
     const BUILD_PATH = '/Users/wickb/Workspace/markman/build';
 
     const CURRENT_VERSION_NAME = 'current';
+
+    const NAVIGATION_FILE_NAME = 'nav.html';
+
+    const VERSION_SWITCHER_FILE_NAME = 'versions.html';
+
+    const LINK_BASE_VARIABLE = '$navBaseUrl';
 }
 
  

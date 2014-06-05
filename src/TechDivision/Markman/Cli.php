@@ -39,10 +39,17 @@ class Cli
 {
 
     /**
-     * @var Loader $loader <REPLACE WITH FIELD COMMENT>
+     * The loader instance
+     *
+     * @var Loader $loader
      */
     protected $loader;
 
+    /**
+     * The compiler instance
+     *
+     * @var Compiler $compiler
+     */
     protected $compiler;
 
     /**
@@ -70,6 +77,7 @@ class Cli
         $docs = array();
         foreach ($versions as $version) {
 
+            // Get the docs
             $docs[$version->getName()] = $this->loader->getDocByVersion($version);
         }
 
@@ -78,19 +86,24 @@ class Cli
 
             // Collect what we need and hand it to the compiler
             $this->compiler->compile(
-                $tmpFile,
-                $this->loader->getSystemPathModifier($version),
+                $tmpFile . DIRECTORY_SEPARATOR . $this->loader->getSystemPathModifier($version),
+                $pathModifier,
                 $name . DIRECTORY_SEPARATOR . $version
             );
         }
 
-
-
         // Clean the tmp dir
+        foreach (scandir(Constants::TMP_PATH) as $tmpFile) {
 
+            // Do not delete our .gitignore file
+            if ($tmpFile === '.gitignore' || $tmpFile === '.') {
+
+                continue;
+            }
+
+            // Delete the file
+            unlink(Constants::TMP_PATH . DIRECTORY_SEPARATOR . $tmpFile);
+        }
     }
 }
-
 $cli = new Cli();
-
- 

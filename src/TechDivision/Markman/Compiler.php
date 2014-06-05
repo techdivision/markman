@@ -68,24 +68,24 @@ class Compiler
     }
 
     /**
-     * @param $path
+     * @param $tmpFilesPath
      * @param string $pathModifier
-     * @param $filePrefix
+     * @param $targetBasePath
      * @return bool
      */
-    public function compile($path, $pathModifier = '', $filePrefix)
+    public function compile($tmpFilesPath, $pathModifier = '', $targetBasePath)
     {
         // Is there anything useful here?
-        if (!is_readable($path . DIRECTORY_SEPARATOR . $pathModifier)) {
+        if (!is_readable($tmpFilesPath)) {
 
             return false;
-        } else {
-
-            $path = $path . DIRECTORY_SEPARATOR . $pathModifier;
         }
 
+        // Path prefix
+        $pathPrefix = Constants::BUILD_PATH . DIRECTORY_SEPARATOR . $targetBasePath . DIRECTORY_SEPARATOR;
+
         // Get an iterator over the part of the directory we want
-        $iterator = $this->getDirectoryIterator(array($path));
+        $iterator = $this->getDirectoryIterator($tmpFilesPath);
 
         // Compile all the files
         $fileUtil = new File();
@@ -95,7 +95,7 @@ class Compiler
             $rawContent = file_get_contents($file);
 
             // Create the name of the target file
-            $targetFile = str_replace($path, '', $file);
+            $targetFile = str_replace($tmpFilesPath, '', $file);
 
             // If the file has a markdown extension we will compile it, if it is something we have to preserve we
             // will do so, if not we will skip it
@@ -119,23 +119,85 @@ class Compiler
 
             // Save the processed (or not) content to a file.
             // Recreate the path the file originally had
-            $fileUtil->fileForceContents(
-                Constants::BUILD_PATH . DIRECTORY_SEPARATOR . $filePrefix . DIRECTORY_SEPARATOR .
-                $targetFile,
-                $rawContent
-            );
+            $fileUtil->fileForceContents($pathPrefix . $targetFile, $rawContent);
         }
+
+        // Now let's generate the navigation
+        $this->generateNavigation($pathPrefix . $pathModifier, $pathPrefix);
+    }
+
+    /**
+     * Will generate a navigation for a certain folder structure
+     *
+     * @param string $srcPath Path to get the structure from
+     * @param string $targetPath Path to write the result to
+     *
+     * @return void
+     */
+    protected function generateNavigation($srcPath, $targetPath)
+    {
+        // Write to file
+        file_put_contents(
+            $targetPath . Constants::NAVIGATION_FILE_NAME,
+            '<ul id="navigation">' . $this->generateRecusiveList(new \DirectoryIterator($srcPath), '') . '</ul>'
+        );
+    }
+
+    /**
+     * Will recursively generate a html list based on a directory structure
+     *
+     * @param \DirectoryIterator $dir      The directory to add to the list
+     * @param string             $nodePath The path of the nodes already collected
+     *
+     * @return string
+     */
+    protected function generateRecusiveList(\DirectoryIterator $dir, $nodePath)
+    {
+        $out = '';
+        $counter = 0;
+        foreach ($dir as $node) {
+
+            // Increase the counter
+            $counter ++;
+
+            // If we got a directory we have to go deeper. If not we can add another link
+            if ($node->isDir() && !$node->isDot()) {
+
+                // Stack up the node path as we need for out links
+                $nodePath .= $node . DIRECTORY_SEPARATOR;
+
+                // Make a recusion with the new path
+                $out .= '<ul node="' . $node . '">' .
+                    $this->generateRecusiveList(new \DirectoryIterator($node->getPathname()), $nodePath) . '</ul>';
+
+                // Clean the last path segment as we do need it within this loop
+                $nodePath = str_replace($node . DIRECTORY_SEPARATOR, '', $nodePath);
+
+            } else {
+                if ($node->isFile()) {
+                    $out .= '<li node="' . strstr($node, ".", true) . '"><a href="' .
+                        Constants::LINK_BASE_VARIABLE . $nodePath . $node . '"></a></li>';
+                }
+            }
+        }
+
+        return $out;
     }
 
     /**
      * Will Return an iterator over a set of files determined by a list of directories to iterate over
      *
-     * @param array $paths List of directories to iterate over
+     * @param string $paths List of directories to iterate over
      *
      * @return \Iterator
      */
-    protected function getDirectoryIterator(array $paths)
+    protected function getDirectoryIterator($paths)
     {
+        // If we are no array, we have to make it one
+        if (!is_array($paths)) {
+
+            $paths = array($paths);
+        }
 
         // As we might have several rootPaths we have to create several RecursiveDirectoryIterators.
         $directoryIterators = array();
