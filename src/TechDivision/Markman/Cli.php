@@ -20,7 +20,8 @@
 namespace TechDivision\Markman;
 
 // Let's get our autoloader
-require_once '../../../vendor/autoload.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR .
+    '..' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 
 /**
  * TechDivision\Markman\Cli
