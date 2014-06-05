@@ -139,7 +139,7 @@ class Compiler
         // Write to file
         file_put_contents(
             $targetPath . Constants::NAVIGATION_FILE_NAME,
-            '<ul id="navigation">' . $this->generateRecusiveList(new \DirectoryIterator($srcPath), '') . '</ul>'
+            '<ul id="navigation">' . $this->generateRecursiveList(new \DirectoryIterator($srcPath), '') . '</ul>'
         );
     }
 
@@ -151,7 +151,7 @@ class Compiler
      *
      * @return string
      */
-    protected function generateRecusiveList(\DirectoryIterator $dir, $nodePath)
+    protected function generateRecursiveList(\DirectoryIterator $dir, $nodePath)
     {
         $out = '';
         $counter = 0;
@@ -168,7 +168,7 @@ class Compiler
 
                 // Make a recusion with the new path
                 $out .= '<ul node="' . $node . '">' .
-                    $this->generateRecusiveList(new \DirectoryIterator($node->getPathname()), $nodePath) . '</ul>';
+                    $this->generateRecursiveList(new \DirectoryIterator($node->getPathname()), $nodePath) . '</ul>';
 
                 // Clean the last path segment as we do need it within this loop
                 $nodePath = str_replace($node . DIRECTORY_SEPARATOR, '', $nodePath);
