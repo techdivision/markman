@@ -92,6 +92,9 @@ class Cli
             );
         }
 
+        // What we also need is a version list
+        $this->compiler->compileVersionSwitch($versions, $name);
+
         // Clean the tmp dir
         foreach (scandir(Constants::TMP_PATH) as $tmpFile) {
 

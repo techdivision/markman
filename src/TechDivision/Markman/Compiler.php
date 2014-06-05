@@ -127,6 +127,32 @@ class Compiler
     }
 
     /**
+     * Will generate a separate file containing a html list of all versions a documentation has
+     *
+     * @param array  $versions   Array of versions
+     * @param string $targetPath Path to write the result to
+     *
+     * @return void
+     */
+    public function compileVersionSwitch(array $versions, $targetPath)
+    {
+        // Build up the html
+        $html = '<ul id="' . Constants::VERSION_SWITCHER_FILE_NAME . '">';
+        foreach ($versions as $version) {
+
+            $html .= '<li node="' . $version->getName() . '">' . $version->getName() .'</li>';
+        }
+        $html .= '</ul>';
+
+        // Write html to file
+        file_put_contents(
+            Constants::BUILD_PATH . DIRECTORY_SEPARATOR . $targetPath .
+                DIRECTORY_SEPARATOR . Constants::VERSION_SWITCHER_FILE_NAME,
+            $html
+        );
+    }
+
+    /**
      * Will generate a navigation for a certain folder structure
      *
      * @param string $srcPath Path to get the structure from
@@ -176,7 +202,8 @@ class Compiler
             } else {
                 if ($node->isFile()) {
                     $out .= '<li node="' . strstr($node, ".", true) . '"><a href="' .
-                        Constants::LINK_BASE_VARIABLE . $nodePath . $node . '"></a></li>';
+                        Constants::LINK_BASE_VARIABLE . $nodePath . $node . '">' .
+                        strstr($node, ".", true) . '</a></li>';
                 }
             }
         }
