@@ -23,10 +23,8 @@ use TechDivision\Markman\Config;
 use TechDivision\Markman\Loader;
 use TechDivision\Markman\Compiler;
 
-// Let's get our autoloader
-require_once __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR .
-    '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
-
+// Let's get bootstrapped
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'bootstrapping.php';
 /**
  * TechDivision\Markman\Clients\Cli
  *
@@ -40,25 +38,11 @@ require_once __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' .
  * @license    http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
  * @link       http://www.techdivision.com/
  */
-class Cli
+class Cli extends AbstractClient
 {
 
     /**
-     * The loader instance
-     *
-     * @var Loader $loader
-     */
-    protected $loader;
-
-    /**
-     * The compiler instance
-     *
-     * @var Compiler $compiler
-     */
-    protected $compiler;
-
-    /**
-     *
+     * Default constructor
      */
     public function __construct()
     {
@@ -95,18 +79,8 @@ class Cli
             );
         }
 
-        // Clean the tmp dir
-        foreach (scandir($config->getValue(Config::TMP_PATH)) as $tmpFile) {
-
-            // Do not delete our .gitignore file
-            if ($tmpFile === '.gitignore' || $tmpFile === '.') {
-
-                continue;
-            }
-
-            // Delete the file
-            unlink($config->getValue(Config::TMP_PATH) . DIRECTORY_SEPARATOR . $tmpFile);
-        }
+        // Clear the tmp dir
+        $this->clearTmpDirectory();
     }
 }
 $cli = new Cli();
