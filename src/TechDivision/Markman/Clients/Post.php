@@ -39,5 +39,3 @@ class Post extends AbstractClient
 {
 
 }
-
- 
