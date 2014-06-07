@@ -89,9 +89,9 @@ class Cli
             // Collect what we need and hand it to the compiler
             $this->compiler->compile(
                 $tmpFile . DIRECTORY_SEPARATOR . $this->loader->getSystemPathModifier($version),
-                $pathModifier,
                 $name . DIRECTORY_SEPARATOR . $version,
-                $versions
+                $versions,
+                $pathModifier
             );
         }
 

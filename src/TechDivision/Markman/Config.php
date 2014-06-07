@@ -55,15 +55,20 @@ class Config
     const HANDLER_STRING = 'HANDLER_STRING';
 
     /**
+     * Default constructor.
      * Will preset some config values with reasonable values
+     *
+     * @param string $projectName   Name under which the project will be handled
+     * @param string $loaderHandler The type of handler we should use, e.g. "github"
+     * @param string $handleString  The connection string the specified handler needs to find what we want
      */
     public function __construct($projectName, $loaderHandler, $handleString)
     {
         // We at least need to know which dir to download to and build in
-        $this->setValue(self::TMP_PATH, __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' .
-            DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'tmp');
-        $this->setValue(self::BUILD_PATH, __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' .
-            DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'build');
+        $basePath = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' .
+            DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
+        $this->setValue(self::TMP_PATH, $basePath . 'tmp');
+        $this->setValue(self::BUILD_PATH, $basePath . 'build');
 
         // Also preset the names of version and navigation file
         $this->setValue(self::VERSION_SWITCHER_FILE_NAME, 'versions');
@@ -94,27 +99,28 @@ class Config
     }
 
     /**
-     * Unsets a specific env var
+     * Unsets a specific config value
      *
-     * @param string $value The env var to unset
+     * @param string $value The value to unset
      *
      * @return void
      */
     public function unsetValue($value)
     {
         if (isset($this->values[$value])) {
+
             unset($this->values[$value]);
         }
     }
 
     /**
-     * Return's a value for specific env var
+     * Returns the content of a specific config value
      *
-     * @param string $value The env var to get value for
+     * @param string $value The value to get the content for
      *
      * @throws \Exception
      *
-     * @return mixed The value to given env var
+     * @return mixed
      */
     public function getValue($value)
     {
@@ -154,4 +160,3 @@ class Config
         return true;
     }
 }
-

@@ -19,6 +19,8 @@
 
 namespace TechDivision\Markman\Interfaces;
 
+use TechDivision\Markman\Entities\Version;
+
 /**
  * TechDivision\Markman\Interfaces\HandlerInterface
  *
@@ -35,21 +37,29 @@ namespace TechDivision\Markman\Interfaces;
 interface HandlerInterface
 {
     /**
+     * Will return the different versions of a documentation
      *
+     * @return array
      */
     public function getVersions();
 
     /**
-     * @param $version
+     * Will download a certain version of a documentation and store it within the tmp directory.
+     * Will return the path to the downloaded documentation.
+     *
+     * @param Version $version The version to download the documentation for
+     *
      * @return string
      */
-    public function getDocByVersion($version);
+    public function getDocByVersion(Version $version);
 
     /**
-     * @param $param
+     * Will return the system's path modifier, a certain path or name different documentation sources
+     * will include in the
+     *
+     * @param string $param An additional parameter which can be included in the system's path modifier
+     *
      * @return string
      */
     public function getSystemPathModifier($param);
 }
-
- 

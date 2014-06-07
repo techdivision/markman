@@ -24,7 +24,8 @@ use TechDivision\Markman\Utils\File;
 /**
  * TechDivision\Markman\Compiler
  *
- * <TODO CLASS DESCRIPTION>
+ * Compiler class using Parsedown to create an exact html copy of the online markdown documentation and
+ * its structure.
  *
  * @category   Appserver
  * @package    TechDivision
@@ -37,45 +38,66 @@ use TechDivision\Markman\Utils\File;
 class Compiler
 {
     /**
-     * @var \Parsedown $compiler <REPLACE WITH FIELD COMMENT>
+     * The actual compiler
+     *
+     * @var \Parsedown $compiler
      */
     protected $compiler;
 
     /**
-     * @var  $allowedExtensions <REPLACE WITH FIELD COMMENT>
+     * Extensions of files we will parse and regenerate using our compiler
+     *
+     * @var array $allowedExtensions
      */
     protected $allowedExtensions;
 
     /**
-     * @var  $preservedExtensions <REPLACE WITH FIELD COMMENT>
+     * Extensions of files we need to preserve and therefor copy to the compiled documentation.
+     * Images for example.
+     *
+     * @var array $preservedExtensions
      */
     protected $preservedExtensions;
 
+    /**
+     * An instance of the configuration
+     *
+     * @var \TechDivision\Markman\Config $config
+     */
     protected $config;
 
     /**
+     * Default constructor
      *
+     * @param \TechDivision\Markman\Config $config The project's configuration instance
      */
     public function __construct(Config $config)
     {
+        // Save the configuration
         $this->config = $config;
 
+        // Get ourselves an instance of the Parsedown compiler
         $this->compiler = new \Parsedown();
 
+        // Prefill the allowed and preserved extensions
         $this->allowedExtensions = array_flip(array('md', 'markdown'));
-
         $this->preservedExtensions = array_flip(array('png', 'jpg', 'jpeg', 'svg', 'css', 'html', 'phtml'));
     }
 
     /**
-     * @param $tmpFilesPath
-     * @param string $pathModifier
-     * @param $targetBasePath
-     * @param $versions
+     * Will compile the documentation file structure at the given tmp path.
+     * Will generate the same file structure with turning markdown into html.
+     * Will also generate navigational elements and embed the documentation content into the configured
+     * template.
+     *
+     * @param string $tmpFilesPath   Path to the temporary, raw, documentation
+     * @param string $targetBasePath Path to write the documentation to
+     * @param array  $versions       Versions a documentation exists for
+     * @param string $pathModifier   A certain part of the folder structure, like a base path we have to know
      *
      * @return bool
      */
-    public function compile($tmpFilesPath, $pathModifier = '', $targetBasePath, $versions)
+    public function compile($tmpFilesPath, $targetBasePath, $versions, $pathModifier = '')
     {
         // Is there anything useful here?
         if (!is_readable($tmpFilesPath)) {
@@ -162,7 +184,7 @@ class Compiler
     /**
      * Will generate a navigation for a certain folder structure
      *
-     * @param string $srcPath Path to get the structure from
+     * @param string $srcPath    Path to get the structure from
      * @param string $targetPath Path to write the result to
      *
      * @return void
@@ -200,7 +222,7 @@ class Compiler
                 // Stack up the node path as we need for out links
                 $nodePath .= $node . DIRECTORY_SEPARATOR;
 
-                // Make a recusion with the new path
+                // Make a recursion with the new path
                 $out .= '<ul node="' . $node . '">' .
                     $this->generateRecursiveList(new \DirectoryIterator($node->getPathname()), $nodePath) . '</ul>';
 

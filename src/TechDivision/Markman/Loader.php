@@ -21,6 +21,7 @@ namespace TechDivision\Markman;
 
 use TechDivision\Markman\Handler\GithubHandler;
 use TechDivision\Markman\Interfaces\LoaderInterface;
+use TechDivision\Markman\Entities\Version;
 
 /**
  * TechDivision\Markman\Loader
@@ -45,7 +46,9 @@ class Loader implements LoaderInterface
     protected $handler;
 
     /**
-     * @param Config $config
+     * Default constructor
+     *
+     * @param Config $config A configuration instance
      *
      * @throws \Exception
      */
@@ -62,11 +65,13 @@ class Loader implements LoaderInterface
         // Check if we got a usable handler
         switch ($config->getValue(Config::LOADER_HANDLER)) {
 
+            // Load the handler for the Github platform
             case 'github':
 
                 $this->handler = new GithubHandler($config);
                 break;
 
+            // No handler found? That must be an error
             default:
 
                 throw new \Exception(
@@ -80,7 +85,19 @@ class Loader implements LoaderInterface
     }
 
     /**
+     * Getter for the handler instance
      *
+     * @return \TechDivision\Markman\Interfaces\HandlerInterface
+     */
+    public function getHandler()
+    {
+        return $this->handler;
+    }
+
+    /**
+     * Will return the different versions of a documentation
+     *
+     * @return array
      */
     public function getVersions()
     {
@@ -88,16 +105,24 @@ class Loader implements LoaderInterface
     }
 
     /**
-     * @param $version
+     * Will download a certain version of a documentation and store it within the tmp directory.
+     * Will return the path to the downloaded documentation.
+     *
+     * @param Version $version The version to download the documentation for
+     *
      * @return string
      */
-    public function getDocByVersion($version)
+    public function getDocByVersion(Version $version)
     {
         return $this->handler->getDocByVersion($version);
     }
 
     /**
-     * @param $param
+     * Will return the system's path modifier, a certain path or name different documentation sources
+     * will include in the
+     *
+     * @param string $param An additional parameter which can be included in the system's path modifier
+     *
      * @return string
      */
     public function getSystemPathModifier($param)

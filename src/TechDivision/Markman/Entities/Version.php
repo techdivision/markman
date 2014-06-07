@@ -22,7 +22,7 @@ namespace TechDivision\Markman\Entities;
 /**
  * TechDivision\Markman\Entities\Version
  *
- * <TODO CLASS DESCRIPTION>
+ * Entity representing an immutable documentation version object
  *
  * @category   Appserver
  * @package    TechDivision_Markman
@@ -35,18 +35,24 @@ namespace TechDivision\Markman\Entities;
 class Version
 {
     /**
-     * @var  $name <REPLACE WITH FIELD COMMENT>
+     * Version name, often the version number
+     *
+     * @var string $name
      */
     protected $name;
 
     /**
-     * @var  $download <REPLACE WITH FIELD COMMENT>
+     * URL under which the documentation with this version resides
+     *
+     * @var string $download
      */
     protected $download;
 
     /**
-     * @param $name
-     * @param $download
+     * Default constructor
+     *
+     * @param string $name     Version name, often the version number
+     * @param string $download URL under which the documentation with this version resides
      */
     public function __construct($name, $download)
     {
@@ -55,7 +61,9 @@ class Version
     }
 
     /**
-     * @return mixed
+     * Getter for the $download member
+     *
+     * @return string
      */
     public function getDownload()
     {
@@ -63,7 +71,9 @@ class Version
     }
 
     /**
-     * @return mixed
+     * Getter for the $name member
+     *
+     * @return string
      */
     public function getName()
     {

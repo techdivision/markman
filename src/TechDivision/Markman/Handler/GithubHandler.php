@@ -39,36 +39,51 @@ use TechDivision\Markman\Entities\Version;
 class GithubHandler extends AbstractHandler
 {
     /**
-     * @var \Github\Client $client <REPLACE WITH FIELD COMMENT>
+     * The client instance used to connect to the documentation source
+     *
+     * @var \Github\Client $client
      */
     protected $client;
 
     /**
-     * @var  $user <REPLACE WITH FIELD COMMENT>
+     * Name of the user maintaining the documentation
+     *
+     * @var string $user
      */
     protected $user;
 
     /**
-     * @var  $project <REPLACE WITH FIELD COMMENT>
+     * Name of the project within the Github
+     *
+     * @var string $project
      */
     protected $project;
 
     /**
-     * @var string $branch <REPLACE WITH FIELD COMMENT>
-     */
-    protected $branch = 'master';
-
-    /**
-     * @var \TechDivision\Markman\Config $config <REPLACE WITH FIELD COMMENT>
+     * A configuration instance
+     *
+     * @var \TechDivision\Markman\Config $config
      */
     protected $config;
 
+    /**
+     * Hostname of the documentation source
+     *
+     * @const string PROVIDER_HOST
+     */
     const PROVIDER_HOST = 'https://github.com';
 
+    /**
+     * Name of the current documentation version name within the Github platform
+     *
+     * @const string CURRENT_VERSION_NAME
+     */
     const CURRENT_VERSION_NAME = 'master';
 
     /**
-     * @param Config $config
+     * Default constructor
+     *
+     * @param \TechDivision\Markman\Config $config A project configuration instance
      */
     public function __construct(Config $config)
     {
@@ -80,7 +95,11 @@ class GithubHandler extends AbstractHandler
     }
 
     /**
-     * @param $handlerString
+     * Will connect the handler to the documentation source
+     *
+     * @param string $handlerString A string containing needed connection information
+     *
+     * @return void
      */
     public function connect($handlerString)
     {
@@ -88,12 +107,19 @@ class GithubHandler extends AbstractHandler
         list($this->user, $this->project) = explode(self::HANDLE_STRING_DELIMETER, $handlerString);
     }
 
+    /**
+     * Getter for the name the current version has within the Github platform
+     *
+     * @return string
+     */
     public function getCurrentVersionName()
     {
         return self::CURRENT_VERSION_NAME;
     }
 
     /**
+     * Will return the different versions of a documentation
+     *
      * @return array
      */
     public function getVersions()
@@ -104,7 +130,8 @@ class GithubHandler extends AbstractHandler
         $versions = array(
             new Version(
                 self::CURRENT_VERSION_NAME,
-                self::PROVIDER_HOST . '/' . $this->user . '/' . $this->project . '/archive/' . self::CURRENT_VERSION_NAME . '.zip')
+                self::PROVIDER_HOST . '/' . $this->user . '/' . $this->project . '/archive/' . self::CURRENT_VERSION_NAME . '.zip'
+            )
         );
 
         // Begin iteration
@@ -120,9 +147,12 @@ class GithubHandler extends AbstractHandler
     }
 
     /**
-     * @param Version $version
+     * Will download a certain version of a documentation and store it within the tmp directory.
+     * Will return the path to the downloaded documentation.
+     *
+     * @param Version $version The version to download the documentation for
+     *
      * @return string
-     * @throws \Exception
      */
     public function getDocByVersion(Version $version)
     {
@@ -139,15 +169,9 @@ class GithubHandler extends AbstractHandler
         );
 
         // Unpack em
-        try {
-            $data = new \ZipArchive();
-            $data->open($this->config->getValue(Config::TMP_PATH) . DIRECTORY_SEPARATOR . $tmpFile);
-            $data->extractTo($targetDir);
-
-        } catch (\Exception $e) {
-
-            throw $e;
-        }
+        $data = new \ZipArchive();
+        $data->open($this->config->getValue(Config::TMP_PATH) . DIRECTORY_SEPARATOR . $tmpFile);
+        $data->extractTo($targetDir);
 
         // Unlink the tmp file, we don't need it any longer
         unlink($this->config->getValue(Config::TMP_PATH) . DIRECTORY_SEPARATOR . $tmpFile);
@@ -156,7 +180,11 @@ class GithubHandler extends AbstractHandler
     }
 
     /**
-     * @param string $version
+     * Will return the system's path modifier, a certain path or name different documentation sources
+     * will include in the documentation structure.
+     * Github always includes a string containing the project name and version separate by a "-" symbol.
+     *
+     * @param string $version The version of the documentation as we need to include it in the modifier
      *
      * @return string
      */

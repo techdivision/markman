@@ -37,9 +37,9 @@ use TechDivision\Markman\Interfaces\HandlerInterface;
 abstract class AbstractHandler implements HandlerInterface
 {
     /**
+     * The delimeter of any given handler string
      *
+     * @const string HANDLE_STRING_DELIMETER
      */
     const HANDLE_STRING_DELIMETER = '/';
 }
-
- 

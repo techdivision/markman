@@ -35,6 +35,8 @@ namespace TechDivision\Markman\Interfaces;
 interface LoaderInterface extends HandlerInterface
 {
     /**
+     * Getter for the actual handler instance
+     *
      * @return \TechDivision\Markman\Interfaces\HandlerInterface
      */
     public function getHandler();
