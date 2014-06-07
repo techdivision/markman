@@ -22,7 +22,7 @@ namespace TechDivision\Markman;
 /**
  * TechDivision\Markman\Config
  *
- * <TODO CLASS DESCRIPTION>
+ * Class containing the configuration for the markman library. Might be filled from wherever.
  *
  * @category   Appserver
  * @package    TechDivision
@@ -35,65 +35,123 @@ namespace TechDivision\Markman;
 class Config
 {
     /**
-     * @var  $fileMapping <REPLACE WITH FIELD COMMENT>
+     * The variable containing all values
+     *
+     * @var array $values
      */
-    protected $fileMapping;
+    protected $values;
 
     /**
-     * @var  $source <REPLACE WITH FIELD COMMENT>
+     * Constants describing possible entries the config might have
      */
-    protected $source;
+    const TMP_PATH = 'TMP_PATH';
+    const BUILD_PATH = 'BUILD_PATH';
+    const NAVIGATION_FILE_NAME = 'NAVIGATION_FILE_NAME';
+    const VERSION_SWITCHER_FILE_NAME = 'VERSION_SWITCHER_FILE_NAME';
+    const NAVIGATION_BASE = 'NAVIGATION_BASE';
+    const PROJECT_NAME = 'PROJECT_NAME';
+    const FILE_MAPPING = 'FILE_MAPPING';
+    const LOADER_HANDLER = 'LOADER_HANDLER';
+    const HANDLER_STRING = 'HANDLER_STRING';
 
     /**
-     * @var  $handlerString <REPLACE WITH FIELD COMMENT>
+     * Will preset some config values with reasonable values
      */
-    protected $handlerString;
-
-    /**
-     * @param mixed $fileMapping
-     */
-    public function setFileMapping($fileMapping)
+    public function __construct($projectName, $loaderHandler, $handleString)
     {
-        $this->fileMapping = $fileMapping;
+        // We at least need to know which dir to download to and build in
+        $this->setValue(self::TMP_PATH, __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' .
+            DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'tmp');
+        $this->setValue(self::BUILD_PATH, __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' .
+            DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'build');
+
+        // Also preset the names of version and navigation file
+        $this->setValue(self::VERSION_SWITCHER_FILE_NAME, 'versions');
+        $this->setValue(self::NAVIGATION_FILE_NAME, 'navigation');
+
+        // Also essential, a base path for the navigation
+        $this->setValue(self::NAVIGATION_BASE, '');
+
+        // Lets also set the values passed as parameters
+        $this->setValue(self::PROJECT_NAME, $projectName);
+        $this->setValue(self::LOADER_HANDLER, $loaderHandler);
+        $this->setValue(self::HANDLER_STRING, $handleString);
     }
 
     /**
-     * @return mixed
+     * Sets a value to specific content
+     *
+     * @param string $valueName The value to set
+     * @param string $value     The actual content for the value
+     *
+     * @return void
      */
-    public function getFileMapping()
+    public function setValue($valueName, $value)
     {
-        return $this->fileMapping;
+        if (!is_null($value)) {
+            $this->values[$valueName] = $value;
+        }
     }
 
     /**
-     * @param mixed $handlerString
+     * Unsets a specific env var
+     *
+     * @param string $value The env var to unset
+     *
+     * @return void
      */
-    public function setHandlerString($handlerString)
+    public function unsetValue($value)
     {
-        $this->handlerString = $handlerString;
+        if (isset($this->values[$value])) {
+            unset($this->values[$value]);
+        }
     }
 
     /**
-     * @return mixed
+     * Return's a value for specific env var
+     *
+     * @param string $value The env var to get value for
+     *
+     * @throws \Exception
+     *
+     * @return mixed The value to given env var
      */
-    public function getHandlerString()
+    public function getValue($value)
     {
-        return $this->handlerString;
+        // check if server var is set
+        if (isset($this->values[$value])) {
+            // return server vars value
+            return $this->values[$value];
+        }
+        // throw exception
+        throw new \Exception("Config value '$value'' does not exist.");
     }
 
     /**
-     * @param mixed $source
+     * Returns all the values as array key value pair format
+     *
+     * @return array The values as array
      */
-    public function setSource($source)
+    public function getValues()
     {
-        $this->source = $source;
+        return $this->values;
     }
 
     /**
-     * @return mixed
+     * Checks if value exists for given value
+     *
+     * @param string $value The value to check
+     *
+     * @return boolean Weather it has value (true) or not (false)
      */
-    public function getSource()
+    public function hasValue($value)
     {
-        return $this->source;
+        // check if server var is set
+        if (!isset($this->values[$value])) {
+            return false;
+        }
+
+        return true;
     }
 }
+

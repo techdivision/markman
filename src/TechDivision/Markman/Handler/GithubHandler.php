@@ -20,7 +20,7 @@
 namespace TechDivision\Markman\Handler;
 
 use Github\Client;
-use TechDivision\Markman\Constants;
+use TechDivision\Markman\Config;
 use TechDivision\Markman\Entities\Version;
 
 /**
@@ -43,21 +43,39 @@ class GithubHandler extends AbstractHandler
      */
     protected $client;
 
+    /**
+     * @var  $user <REPLACE WITH FIELD COMMENT>
+     */
     protected $user;
 
+    /**
+     * @var  $project <REPLACE WITH FIELD COMMENT>
+     */
     protected $project;
 
+    /**
+     * @var string $branch <REPLACE WITH FIELD COMMENT>
+     */
     protected $branch = 'master';
+
+    /**
+     * @var \TechDivision\Markman\Config $config <REPLACE WITH FIELD COMMENT>
+     */
+    protected $config;
 
     const PROVIDER_HOST = 'https://github.com';
 
     const CURRENT_VERSION_NAME = 'master';
 
     /**
-     *
+     * @param Config $config
      */
-    public function __construct()
+    public function __construct(Config $config)
     {
+        // Safe the config for later use
+        $this->config = $config;
+
+        // Get the Github client
         $this->client = new Client();
     }
 
@@ -111,19 +129,19 @@ class GithubHandler extends AbstractHandler
 
         // Save the tar in a tmp archive
         $tmpFile = md5($version->getDownload()) . '.zip';
-        $targetDir = Constants::TMP_PATH . DIRECTORY_SEPARATOR . $this->project .
+        $targetDir = $this->config->getValue(Config::TMP_PATH) . DIRECTORY_SEPARATOR . $this->project .
             DIRECTORY_SEPARATOR . $version->getName();
 
         // Download the archive for the given version
         file_put_contents(
-            Constants::TMP_PATH . DIRECTORY_SEPARATOR . $tmpFile,
+            $this->config->getValue(Config::TMP_PATH) . DIRECTORY_SEPARATOR . $tmpFile,
             file_get_contents($version->getDownload())
         );
 
         // Unpack em
         try {
             $data = new \ZipArchive();
-            $data->open(Constants::TMP_PATH . DIRECTORY_SEPARATOR . $tmpFile);
+            $data->open($this->config->getValue(Config::TMP_PATH) . DIRECTORY_SEPARATOR . $tmpFile);
             $data->extractTo($targetDir);
 
         } catch (\Exception $e) {
@@ -132,7 +150,7 @@ class GithubHandler extends AbstractHandler
         }
 
         // Unlink the tmp file, we don't need it any longer
-        unlink(Constants::TMP_PATH . DIRECTORY_SEPARATOR . $tmpFile);
+        unlink($this->config->getValue(Config::TMP_PATH) . DIRECTORY_SEPARATOR . $tmpFile);
 
         return $targetDir;
     }

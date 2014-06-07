@@ -71,9 +71,11 @@ class Compiler
      * @param $tmpFilesPath
      * @param string $pathModifier
      * @param $targetBasePath
+     * @param $versions
+     *
      * @return bool
      */
-    public function compile($tmpFilesPath, $pathModifier = '', $targetBasePath)
+    public function compile($tmpFilesPath, $pathModifier = '', $targetBasePath, $versions)
     {
         // Is there anything useful here?
         if (!is_readable($tmpFilesPath)) {
@@ -81,8 +83,12 @@ class Compiler
             return false;
         }
 
+        // First of all we need a version file
+        $this->compileVersionSwitch($versions);
+
         // Path prefix
-        $pathPrefix = Constants::BUILD_PATH . DIRECTORY_SEPARATOR . $targetBasePath . DIRECTORY_SEPARATOR;
+        $pathPrefix = $this->config->getValue(Config::BUILD_PATH) . DIRECTORY_SEPARATOR .
+            $targetBasePath . DIRECTORY_SEPARATOR;
 
         // Get an iterator over the part of the directory we want
         $iterator = $this->getDirectoryIterator($tmpFilesPath);
@@ -110,11 +116,11 @@ class Compiler
             }
 
             // Apply any name mapping there might be
-            if (count($this->config->getFileMapping()) > 0) {
+            if (count($this->config->getValue(Config::FILE_MAPPING)) > 0) {
 
                 // Split up the mapping and apply it
-                $haystacks = array_keys($this->config->getFileMapping());
-                $targetFile = str_replace($haystacks, $this->config->getFileMapping(), $targetFile);
+                $haystacks = array_keys($this->config->getValue(Config::FILE_MAPPING));
+                $targetFile = str_replace($haystacks, $this->config->getValue(Config::FILE_MAPPING), $targetFile);
             }
 
             // Save the processed (or not) content to a file.
@@ -129,15 +135,14 @@ class Compiler
     /**
      * Will generate a separate file containing a html list of all versions a documentation has
      *
-     * @param array  $versions   Array of versions
-     * @param string $targetPath Path to write the result to
+     * @param array $versions Array of versions
      *
      * @return void
      */
-    public function compileVersionSwitch(array $versions, $targetPath)
+    public function compileVersionSwitch(array $versions)
     {
         // Build up the html
-        $html = '<ul id="' . Constants::VERSION_SWITCHER_FILE_NAME . '">';
+        $html = '<ul id="' . $this->config->getValue(Config::VERSION_SWITCHER_FILE_NAME) . '">';
         foreach ($versions as $version) {
 
             $html .= '<li node="' . $version->getName() . '">' . $version->getName() .'</li>';
@@ -145,9 +150,11 @@ class Compiler
         $html .= '</ul>';
 
         // Write html to file
-        file_put_contents(
-            Constants::BUILD_PATH . DIRECTORY_SEPARATOR . $targetPath .
-                DIRECTORY_SEPARATOR . Constants::VERSION_SWITCHER_FILE_NAME,
+        $fileUtil = new File();
+        $fileUtil->fileForceContents(
+            $this->config->getValue(Config::BUILD_PATH) . DIRECTORY_SEPARATOR .
+            $this->config->getValue(Config::PROJECT_NAME) . DIRECTORY_SEPARATOR .
+            $this->config->getValue(Config::VERSION_SWITCHER_FILE_NAME) . '.html',
             $html
         );
     }
@@ -163,8 +170,9 @@ class Compiler
     protected function generateNavigation($srcPath, $targetPath)
     {
         // Write to file
-        file_put_contents(
-            $targetPath . Constants::NAVIGATION_FILE_NAME,
+        $fileUtil = new File();
+        $fileUtil->fileForceContents(
+            $targetPath . $this->config->getValue(Config::NAVIGATION_FILE_NAME),
             '<ul id="navigation">' . $this->generateRecursiveList(new \DirectoryIterator($srcPath), '') . '</ul>'
         );
     }
@@ -202,7 +210,7 @@ class Compiler
             } else {
                 if ($node->isFile()) {
                     $out .= '<li node="' . strstr($node, ".", true) . '"><a href="' .
-                        Constants::LINK_BASE_VARIABLE . $nodePath . $node . '">' .
+                        $this->config->getValue(Config::NAVIGATION_BASE) . $nodePath . $node . '">' .
                         strstr($node, ".", true) . '</a></li>';
                 }
             }

@@ -17,14 +17,18 @@
  * @link       http://www.techdivision.com/
  */
 
-namespace TechDivision\Markman;
+namespace TechDivision\Markman\Clients;
+
+use TechDivision\Markman\Config;
+use TechDivision\Markman\Loader;
+use TechDivision\Markman\Compiler;
 
 // Let's get our autoloader
 require_once __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR .
-    '..' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+    '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 
 /**
- * TechDivision\Markman\Cli
+ * TechDivision\Markman\Clients\Cli
  *
  * Class to provide a simple command line interface
  *
@@ -62,16 +66,13 @@ class Cli
         $pathModifier = 'docs';
 
         // Prepare the configuration
-        $config = new Config();
-        $config->setFileMapping(array('README' => 'index'));
-        $config->setSource('github');
-        $config->setHandlerString('techdivision/TechDivision_AppserverDocumentation');
+        $config = new Config($name, 'github', 'techdivision/TechDivision_AppserverDocumentation');
+        $config->setValue(Config::FILE_MAPPING, array('README' => 'index'));
 
         $this->loader = new Loader($config);
         $this->compiler = new Compiler($config);
 
         // Get all possible versions
-        $versions = array();
         $versions = $this->loader->getVersions();
 
         // Iterate over all versions and get content
@@ -89,15 +90,13 @@ class Cli
             $this->compiler->compile(
                 $tmpFile . DIRECTORY_SEPARATOR . $this->loader->getSystemPathModifier($version),
                 $pathModifier,
-                $name . DIRECTORY_SEPARATOR . $version
+                $name . DIRECTORY_SEPARATOR . $version,
+                $versions
             );
         }
 
-        // What we also need is a version list
-        $this->compiler->compileVersionSwitch($versions, $name);
-
         // Clean the tmp dir
-        foreach (scandir(Constants::TMP_PATH) as $tmpFile) {
+        foreach (scandir($config->getValue(Config::TMP_PATH)) as $tmpFile) {
 
             // Do not delete our .gitignore file
             if ($tmpFile === '.gitignore' || $tmpFile === '.') {
@@ -106,7 +105,7 @@ class Cli
             }
 
             // Delete the file
-            unlink(Constants::TMP_PATH . DIRECTORY_SEPARATOR . $tmpFile);
+            unlink($config->getValue(Config::TMP_PATH) . DIRECTORY_SEPARATOR . $tmpFile);
         }
     }
 }

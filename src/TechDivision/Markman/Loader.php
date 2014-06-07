@@ -50,26 +50,31 @@ class Loader
     public function __construct(Config $config)
     {
         // Check if we got what we need
-        if (strlen($config->getHandlerString()) === 0 || strlen($config->getSource()) === 0 ) {
+        if (strlen($config->getValue(Config::HANDLER_STRING)) === 0 ||
+            strlen($config->getValue(Config::LOADER_HANDLER)) === 0
+        ) {
 
             throw new \Exception('Missing critical loader configuration. Requires at least "source" and "handlerString".');
         }
 
         // Check if we got a usable handler
-        switch ($config->getSource()) {
+        switch ($config->getValue(Config::LOADER_HANDLER)) {
 
             case 'github':
 
-                $this->handler = new GithubHandler();
+                $this->handler = new GithubHandler($config);
                 break;
 
             default:
 
-                throw new \Exception('Missing handler for documentation source ' . $config->getSource());
+                throw new \Exception(
+                    'Missing handler for documentation source ' .
+                    $config->getValue(Config::LOADER_HANDLER)
+                );
         }
 
         // Connect the handler
-        $this->handler->connect($config->getHandlerString());
+        $this->handler->connect($config->getValue(Config::HANDLER_STRING));
     }
 
     /**
@@ -98,5 +103,3 @@ class Loader
         return $this->handler->getSystemPathModifier($param);
     }
 }
-
- 
