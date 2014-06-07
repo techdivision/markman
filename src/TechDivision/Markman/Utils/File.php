@@ -22,7 +22,7 @@ namespace TechDivision\Markman\Utils;
 /**
  * TechDivision\Markman\Utils\File
  *
- * <TODO CLASS DESCRIPTION>
+ * File utility which provides additional file operation methods.
  *
  * @category   Appserver
  * @package    TechDivision_Markman
@@ -34,18 +34,30 @@ namespace TechDivision\Markman\Utils;
  */
 class File
 {
-    public function fileForceContents($dir, $contents)
+    /**
+     * Will write content to a file without the need for a existing path to it.
+     * If the path and its folders do not exist they will be created.
+     * 
+     * @param string $path     The path to write the content to
+     * @param string $contents Content to write into provided file path
+     *
+     * @return integer
+     */
+    public function fileForceContents($path, $contents)
     {
-        $parts = explode('/', $dir);
+        // Split the path into pieces so we can iterate over them
+        $parts = explode(DIRECTORY_SEPARATOR, $path);
         $file = array_pop($parts);
-        $dir = '';
+        $path = '';
+
+        // Iterate over the path pieces and build the path up directory for directory
         foreach ($parts as $part) {
-            if (!is_dir($dir .= "/$part")) {
-                mkdir($dir);
+            if (!is_dir($path .= DIRECTORY_SEPARATOR . $part)) {
+                mkdir($path);
             }
         }
-        file_put_contents("$dir/$file", $contents);
+
+        // Finally create our file and fill in the content
+        return file_put_contents($path . DIRECTORY_SEPARATOR . $file, $contents);
     }
 }
-
- 

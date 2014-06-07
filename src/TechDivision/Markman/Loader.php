@@ -20,7 +20,7 @@
 namespace TechDivision\Markman;
 
 use TechDivision\Markman\Handler\GithubHandler;
-
+use TechDivision\Markman\Interfaces\LoaderInterface;
 
 /**
  * TechDivision\Markman\Loader
@@ -35,10 +35,12 @@ use TechDivision\Markman\Handler\GithubHandler;
  * @license    http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
  * @link       http://www.techdivision.com/
  */
-class Loader
+class Loader implements LoaderInterface
 {
     /**
-     * @var Handler\GithubHandler $handler <REPLACE WITH FIELD COMMENT>
+     * The handler which will do the actual loader work
+     *
+     * @var \TechDivision\Markman\Interfaces\HandlerInterface $handler
      */
     protected $handler;
 

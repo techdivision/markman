@@ -10,36 +10,46 @@
  *
  * @category   Appserver
  * @package    TechDivision_Markman
- * @subpackage Handler
+ * @subpackage Interfaces
  * @author     Bernhard Wick <b.wick@techdivision.com>
  * @copyright  2014 TechDivision GmbH - <info@techdivision.com>
  * @license    http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
  * @link       http://www.techdivision.com/
  */
 
-namespace TechDivision\Markman\Handler;
-
-use TechDivision\Markman\Interfaces\HandlerInterface;
+namespace TechDivision\Markman\Interfaces;
 
 /**
- * TechDivision\Markman\Handler\AbstractHandler
+ * TechDivision\Markman\Interfaces\HandlerInterface
  *
- * Abstract implementation of a handler which other handlers can inherit from
+ * Provides an interface all handler classes have to implement
  *
  * @category   Appserver
  * @package    TechDivision_Markman
- * @subpackage Handler
+ * @subpackage Interfaces
  * @author     Bernhard Wick <b.wick@techdivision.com>
  * @copyright  2014 TechDivision GmbH - <info@techdivision.com>
  * @license    http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
  * @link       http://www.techdivision.com/
  */
-abstract class AbstractHandler implements HandlerInterface
+interface HandlerInterface
 {
     /**
      *
      */
-    const HANDLE_STRING_DELIMETER = '/';
+    public function getVersions();
+
+    /**
+     * @param $version
+     * @return string
+     */
+    public function getDocByVersion($version);
+
+    /**
+     * @param $param
+     * @return string
+     */
+    public function getSystemPathModifier($param);
 }
 
  
