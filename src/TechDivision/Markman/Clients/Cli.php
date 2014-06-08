@@ -50,11 +50,11 @@ class Cli extends AbstractClient
         $pathModifier = 'docs';
 
         // Prepare the configuration
-        $config = new Config($name, 'github', 'techdivision/TechDivision_AppserverDocumentation');
-        $config->setValue(Config::FILE_MAPPING, array('README' => 'index'));
+        $this->config = new Config($name, 'github', 'techdivision/TechDivision_AppserverDocumentation');
+        $this->config->setValue(Config::FILE_MAPPING, array('README' => 'index'));
 
-        $this->loader = new Loader($config);
-        $this->compiler = new Compiler($config);
+        $this->loader = new Loader($this->config);
+        $this->compiler = new Compiler($this->config);
 
         // Get all possible versions
         $versions = $this->loader->getVersions();
