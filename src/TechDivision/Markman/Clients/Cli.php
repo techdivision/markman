@@ -22,7 +22,6 @@ namespace TechDivision\Markman\Clients;
 use TechDivision\Markman\Config;
 use TechDivision\Markman\Loader;
 use TechDivision\Markman\Compiler;
-use TechDivision\Markman\Utils\Template;
 
 // Let's get bootstrapped
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'bootstrapping.php';
@@ -51,14 +50,13 @@ class Cli extends AbstractClient
         $pathModifier = 'docs';
 
         // Prepare the configuration
-        $config = new Config($name, 'github', 'techdivision/TechDivision_AppserverDocumentation');
-        $config->setValue(Config::FILE_MAPPING, array('README' => 'index'));
+        $this->config = new Config($name, 'github', 'techdivision/TechDivision_AppserverDocumentation');
+        $this->config->setValue(Config::FILE_MAPPING, array('README' => 'index'));
 
-        $this->loader   =  new Loader($config);
-        $this->compiler =  new Compiler($config);
+        $this->loader = new Loader($this->config);
+        $this->compiler = new Compiler($this->config);
         $this->template =  new Template();
         $this->template->setTitle($name);
-
 
         // Get all possible versions
         $versions = $this->loader->getVersions();
@@ -82,10 +80,6 @@ class Cli extends AbstractClient
                 $pathModifier
             );
         }
-
-        $this->template->copyTemplateVendorDir(Config::BUILD_PATH. DIRECTORY_SEPARATOR .$name .
-        DIRECTORY_SEPARATOR . "vendor"
-        );
 
         // Clear the tmp dir
         $this->clearTmpDirectory();

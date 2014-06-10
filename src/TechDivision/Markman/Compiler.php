@@ -199,7 +199,7 @@ class Compiler
         // Write to file
         $fileUtil = new File();
         $fileUtil->fileForceContents(
-            $targetPath . $this->config->getValue(Config::NAVIGATION_FILE_NAME),
+            $targetPath . $this->config->getValue(Config::NAVIGATION_FILE_NAME) . '.html',
             '<ul id="navigation">' . $this->generateRecursiveList(new \DirectoryIterator($srcPath), '') . '</ul>'
         );
     }
