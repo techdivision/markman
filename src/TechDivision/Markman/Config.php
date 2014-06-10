@@ -69,6 +69,7 @@ class Config
     const LOADER_HANDLER = 'LOADER_HANDLER';
     const HANDLER_STRING = 'HANDLER_STRING';
     const TEMPLATE_NAME = 'TEMPLATE_NAME';
+    const MIN_TIME_INTERVAL = 'MIN_TIME_INTERVAL';
 
     /**
      * Default constructor.
@@ -108,6 +109,9 @@ class Config
 
         // Also essential, a base path for the navigation
         $this->setValue(self::NAVIGATION_BASE, '');
+
+        // The time in between different compile cycles in minutes. Set as a precaution
+        $this->setValue(self::MIN_TIME_INTERVAL, 5);
     }
 
     /**
