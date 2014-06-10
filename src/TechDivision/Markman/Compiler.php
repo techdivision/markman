@@ -167,7 +167,7 @@ class Compiler
         $html = '<ul id="' . $this->config->getValue(Config::VERSION_SWITCHER_FILE_NAME) . '">';
         foreach ($versions as $version) {
 
-            $html .= '<li node="' . $version->getName() . '">' . $version->getName() .'</li>';
+            $html .= '<li node="' . $version->getName() . '">' . $version->getName() . '</li>';
         }
         $html .= '</ul>';
 
@@ -210,11 +210,10 @@ class Compiler
     protected function generateRecursiveList(\DirectoryIterator $dir, $nodePath)
     {
         $out = '';
-        $counter = 0;
         foreach ($dir as $node) {
 
-            // Increase the counter
-            $counter ++;
+            // Create the link path
+            $linkPath = $this->config->getValue(Config::NAVIGATION_BASE) . $nodePath . $node;
 
             // If we got a directory we have to go deeper. If not we can add another link
             if ($node->isDir() && !$node->isDot()) {
@@ -222,19 +221,37 @@ class Compiler
                 // Stack up the node path as we need for out links
                 $nodePath .= $node . DIRECTORY_SEPARATOR;
 
+                // If the directory contains an index file we will link it to the dir
+                if (isset(array_flip(scandir($node->getRealPath()))['index.html'])) {
+
+                    $nodeName = '<a href="' . $linkPath . DIRECTORY_SEPARATOR . 'index.html">' . $node . '</a>';
+
+                } else {
+
+                    $nodeName = $node;
+                }
+
                 // Make a recursion with the new path
-                $out .= '<ul node="' . $node . '">' .
-                    $this->generateRecursiveList(new \DirectoryIterator($node->getPathname()), $nodePath) . '</ul>';
+                $out .= '<li node="' . $node . '">' . $nodeName . '<ul>' .
+                    $this->generateRecursiveList(new \DirectoryIterator($node->getPathname()), $nodePath) .
+                    '</ul></li>';
 
                 // Clean the last path segment as we do need it within this loop
                 $nodePath = str_replace($node . DIRECTORY_SEPARATOR, '', $nodePath);
 
-            } else {
-                if ($node->isFile()) {
-                    $out .= '<li node="' . strstr($node, ".", true) . '"><a href="' .
-                        $this->config->getValue(Config::NAVIGATION_BASE) . $nodePath . $node . '">' .
-                        strstr($node, ".", true) . '</a></li>';
+            } elseif ($node->isFile()) {
+                // A file is always a leaf, so it cannot be an ul element
+
+                // We will skip index files as actual leaves
+                if ($node == 'index.html') {
+
+                    continue;
                 }
+
+                // Create the actual leaf
+                $out .= '<li node="' . strstr($node, ".", true) . '"><a href="' .
+                    $linkPath . '">' .
+                    strstr($node, ".", true) . '</a></li>';
             }
         }
 
