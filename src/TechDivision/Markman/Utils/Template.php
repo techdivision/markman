@@ -41,9 +41,9 @@ class Template
 
     private $templateBasePath = '/Users/roettigl/PhpstormProjects/markman/templates/default/index.html';
 
-    private $vendorBasePath = '/Users/roettigl/PhpstormProjects/markman/templates/default/vendor';
+    private $vendorBasePath = '/Users/roettigl/PhpstormProjects/markman/templates/default/library';
 
-    private $vendorUrl = 'http://localhost/markman/appserver.io/vendor';
+    private $vendorUrl = 'http://localhost/markman/appserver.io/library';
 
     private $title = '';
 

@@ -22,6 +22,8 @@ namespace TechDivision\Markman\Clients;
 use TechDivision\Markman\Config;
 use TechDivision\Markman\Loader;
 use TechDivision\Markman\Compiler;
+use TechDivision\Markman\Utils\Template;
+
 
 // Let's get bootstrapped
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'bootstrapping.php';
@@ -80,6 +82,10 @@ class Cli extends AbstractClient
                 $pathModifier
             );
         }
+
+        $this->template->copyTemplateVendorDir(Config::BUILD_PATH. DIRECTORY_SEPARATOR .$name .
+            DIRECTORY_SEPARATOR . "library"
+        );
 
         // Clear the tmp dir
         $this->clearTmpDirectory();
