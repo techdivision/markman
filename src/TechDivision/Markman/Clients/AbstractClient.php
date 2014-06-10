@@ -60,6 +60,55 @@ class AbstractClient
     protected $compiler;
 
     /**
+     * Default constructor
+     */
+    public function __construct()
+    {
+        // Prepare the configuration
+        $this->config = new Config();
+
+        // Get ourselves a loader and compiler
+        $this->loader = new Loader($this->config);
+        $this->compiler = new Compiler($this->config);
+    }
+
+    /**
+     * This method will start the whole process of fetching the documentation and compiling it into a complete
+     * and flat html documentation.
+     */
+    public function run()
+    {
+        // Get the modifier for the path
+        $pathModifier = 'docs';
+
+        // Get all possible versions
+        $versions = $this->loader->getVersions();
+
+        // Iterate over all versions and get content
+        $docs = array();
+        foreach ($versions as $version) {
+
+            // Get the docs
+            $docs[$version->getName()] = $this->loader->getDocByVersion($version);
+        }
+
+        // Lets unpack the docs one by one and hand them to the compiler
+        foreach ($docs as $version => $tmpFile) {
+
+            // Collect what we need and hand it to the compiler
+            $this->compiler->compile(
+                $tmpFile . DIRECTORY_SEPARATOR . $this->loader->getSystemPathModifier($version),
+                $this->config->getValue(Config::PROJECT_NAME) . DIRECTORY_SEPARATOR . $version,
+                $versions,
+                $pathModifier
+            );
+        }
+
+        // Clear the tmp dir
+        $this->clearTmpDirectory();
+    }
+
+    /**
      * Will clean the tmp directory by deleting all files within it
      *
      * @return void

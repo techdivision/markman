@@ -42,45 +42,6 @@ require_once __DIR__ . DIRECTORY_SEPARATOR . 'bootstrapping.php';
 class Cli extends AbstractClient
 {
 
-    /**
-     * Default constructor
-     */
-    public function __construct()
-    {
-        $pathModifier = 'docs';
-
-        // Prepare the configuration
-        $this->config = new Config();
-
-        $this->loader = new Loader($this->config);
-        $this->compiler = new Compiler($this->config);
-        $this->template =  new Template($this->config);
-
-        // Get all possible versions
-        $versions = $this->loader->getVersions();
-
-        // Iterate over all versions and get content
-        $docs = array();
-        foreach ($versions as $version) {
-
-            // Get the docs
-            $docs[$version->getName()] = $this->loader->getDocByVersion($version);
-        }
-
-        // Lets unpack the docs one by one and hand them to the compiler
-        foreach ($docs as $version => $tmpFile) {
-
-            // Collect what we need and hand it to the compiler
-            $this->compiler->compile(
-                $tmpFile . DIRECTORY_SEPARATOR . $this->loader->getSystemPathModifier($version),
-                $this->config->getValue(Config::PROJECT_NAME) . DIRECTORY_SEPARATOR . $version,
-                $versions,
-                $pathModifier
-            );
-        }
-
-        // Clear the tmp dir
-        $this->clearTmpDirectory();
-    }
 }
 $cli = new Cli();
+$cli->run();

@@ -119,7 +119,7 @@ class Template
     }
 
     /**
-     * 
+     *
      *
      * @param array $contentElements
      * @return mixed|string
