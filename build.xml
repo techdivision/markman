@@ -3,10 +3,7 @@
 
 	<property environment="env" />
 
-    <property name="namespace" value="techdivision" />
     <property name="module" value="markman"/>
-    <property name="codepool" value="vendor"/>
-    <property name="unique.name" value="${codepool}/${namespace}/${module}" />
     <property name="php-src.dir" value="${basedir}/src" />
     <property name="php-test.dir" value="${basedir}/tests" />
     <property name="php-target.dir" value="${basedir}/target"/>
@@ -22,33 +19,31 @@
 		<delete dir="${php-target.dir}" includeemptydirs="true" quiet="false" verbose="true" failonerror="true"/>
 	</target>
 
-	<!-- ==================================================================== -->
-	<!-- Prepares all the required directories								  -->
-	<!-- ==================================================================== -->
-	<target name="prepare" depends="clean" description="Prepares all the required directories.">
-		<mkdir dir="${php-target.dir}" />
-        <mkdir dir="${php-target.dir}/reports" />
-        <mkdir dir="${php-target.dir}/reports/coverage" />
-	</target>
-
     <!-- ==================================================================== -->
     <!-- Copies the sources to the target directory                           -->
     <!-- ==================================================================== -->
-    <target name="copy" depends="prepare" description="Copies the sources to the target directory.">
-        <copy todir="${php-target.dir}/${unique.name}/src" preservelastmodified="true" overwrite="true">
+    <target name="copy" depends="clean" description="Copies the sources to the target directory.">
+        <copy todir="${php-target.dir}" preservelastmodified="true" overwrite="true">
             <fileset dir="${php-src.dir}">
                 <include name="**/*" />
             </fileset>
         </copy>
+        <!-- copy the composer configuration file to the target directory -->
+        <copy file="${basedir}/composer.json" todir="${php-target.dir}" />
+        <!-- install composer packages -->
+        <exec dir="${php-target.dir}" executable="composer">
+            <env key="PATH" value="${instance.base.dir}/bin:${env.PATH}"/>
+            <env key="COMPOSER_ROOT_VERSION" value="dev-master"/>
+            <arg line="--no-interaction update"/>
+        </exec>
     </target>
 
 	<!-- ==================================================================== -->
 	<!-- Copies the sources to the deploy directory     					  -->
 	<!-- ==================================================================== -->
-	<target name="deploy" description="Copies the sources to the deploy directory.">
-		<antcall target="prepare"/>
-		<antcall target="copy"/>
-		<copy todir="${deploy.dir}" preservelastmodified="true" overwrite="true">
+	<target name="deploy" depends="copy" description="Copies the sources to the deploy directory.">
+
+		<copy todir="${deploy.dir}/${module}" preservelastmodified="true" overwrite="true">
 			<fileset dir="${php-target.dir}">
 				<include name="**/*"/>
 			</fileset>
@@ -123,14 +118,6 @@
                 <expandproperties/>
             </filterchain>
         </copy>
-    	<!-- copy the composer configuration file to the target directory -->
-    	<copy file="${basedir}/composer.json" todir="${php-target.dir}" />
-        <!-- install composer packages -->
-        <exec dir="${php-target.dir}" executable="composer">
-            <env key="PATH" value="${instance.base.dir}/bin:${env.PATH}"/>
-            <env key="COMPOSER_ROOT_VERSION" value="dev-master"/>
-            <arg line="--no-interaction update"/>
-        </exec>
     </target>
 
     <!-- ==================================================================== -->

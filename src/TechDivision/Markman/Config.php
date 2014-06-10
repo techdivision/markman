@@ -96,7 +96,7 @@ class Config
         }
 
         // We at least need to know which dir to download to and build in
-        $basePath = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' .
+        $basePath = __DIR__ . DIRECTORY_SEPARATOR . '..' .
             DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
         $this->setValue(self::TMP_PATH, $basePath . 'tmp');
         $this->setValue(self::BUILD_PATH, $basePath . 'build');
