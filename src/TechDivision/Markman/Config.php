@@ -42,6 +42,20 @@ class Config
     protected $values;
 
     /**
+     * The elements which have to be present for a minimal configuration
+     *
+     * @var array $minimalConfiguration
+     */
+    protected $minimalConfiguration;
+
+    /**
+     * The default configuration file name.
+     *
+     * @const string DEFAULT_CONFIG_FILE
+     */
+    const DEFAULT_CONFIG_FILE = 'config.default.json';
+
+    /**
      * Constants describing possible entries the config might have
      */
     const TMP_PATH = 'TMP_PATH';
@@ -58,12 +72,26 @@ class Config
      * Default constructor.
      * Will preset some config values with reasonable values
      *
-     * @param string $projectName   Name under which the project will be handled
-     * @param string $loaderHandler The type of handler we should use, e.g. "github"
-     * @param string $handleString  The connection string the specified handler needs to find what we want
+     * @param string $configFilePath The path to the config file
      */
-    public function __construct($projectName, $loaderHandler, $handleString)
+    public function __construct($configFilePath = null)
     {
+        // Fill which things we need for a minimal configuration
+        $this->minimalConfiguration = array(
+            self::PROJECT_NAME,
+            self::LOADER_HANDLER,
+            self::HANDLER_STRING
+        );
+
+        // We have to load the configuration file. If there is none given we will load the default one
+        if ($configFilePath === null) {
+
+            $configFilePath = __DIR__ . DIRECTORY_SEPARATOR . self::DEFAULT_CONFIG_FILE;
+        }
+
+        // Try to load the config file
+        $this->load($configFilePath);
+
         // We at least need to know which dir to download to and build in
         $basePath = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' .
             DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
@@ -76,24 +104,28 @@ class Config
 
         // Also essential, a base path for the navigation
         $this->setValue(self::NAVIGATION_BASE, '');
-
-        // Lets also set the values passed as parameters
-        $this->setValue(self::PROJECT_NAME, $projectName);
-        $this->setValue(self::LOADER_HANDLER, $loaderHandler);
-        $this->setValue(self::HANDLER_STRING, $handleString);
     }
 
     /**
      * Sets a value to specific content
      *
      * @param string $valueName The value to set
-     * @param string $value     The actual content for the value
+     * @param string $value The actual content for the value
      *
      * @return void
      */
     public function setValue($valueName, $value)
     {
         if (!is_null($value)) {
+
+            // Do we know the value name? If not notice the user
+            if (!defined('self::' . $valueName)) {
+
+                // Create an error message but do not stop execution
+                error_log('We do not seem to know the config value ' . $valueName . ' was that intentional?');
+            }
+
+            // Set the value nethertheless
             $this->values[$valueName] = $value;
         }
     }
@@ -157,6 +189,74 @@ class Config
             return false;
         }
 
+        return true;
+    }
+
+    /**
+     * Will load a certain configuration file into this instance. Might throw an exception if the file is not valid
+     *
+     * @param string $file The path of the configuration file we should load
+     *
+     * @throws \Exception
+     *
+     * @return void
+     */
+    public function load($file)
+    {
+        // Check if we can read from the file
+        if (!is_readable($file)) {
+
+            throw new \Exception('Could not read from potential configuration file "' . $file . '".');
+        }
+
+        // Get the config
+        $configCandidate = json_decode(file_get_contents($file));
+
+        // Did we get the right thing?
+        if (!$configCandidate instanceof \stdClass) {
+
+            throw new \Exception('Configuration file does not contain valid JSON');
+        }
+
+        // Get the config using our mapping
+        foreach ($configCandidate as $key => $configValue) {
+
+            // Try to map the value
+            $valueName = str_replace('-', '_', strtoupper($key));
+
+            // If we got an array we have to make an explicit cast to kill the stdClass
+            if (!is_string($configValue)) {
+
+                $configValue = (array) $configValue;
+            }
+
+            // Set the value
+            $this->setValue($valueName, $configValue);
+        }
+
+        // Done? Then validate what we got
+        $this->validate();
+    }
+
+    /**
+     * Will validate the configuration by looking if the minimal values have been set.
+     *
+     * @throws \Exception
+     *
+     * @return bool|void
+     */
+    public function validate()
+    {
+        // Iterate over all needed value names and check if we got entries for them
+        foreach ($this->minimalConfiguration as $neededValue) {
+
+            if (!$this->hasValue($neededValue)) {
+
+                throw new \Exception('Missing needed configuration value ' . $neededValue);
+            }
+        }
+
+        // Still here, sounds good
         return true;
     }
 }

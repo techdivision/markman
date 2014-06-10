@@ -48,17 +48,15 @@ class Cli extends AbstractClient
      */
     public function __construct()
     {
-        $name = 'appserver.io';
         $pathModifier = 'docs';
 
         // Prepare the configuration
-        $this->config = new Config($name, 'github', 'techdivision/TechDivision_AppserverDocumentation');
-        $this->config->setValue(Config::FILE_MAPPING, array('README' => 'index'));
+        $this->config = new Config();
 
         $this->loader = new Loader($this->config);
         $this->compiler = new Compiler($this->config);
         $this->template =  new Template();
-        $this->template->setTitle($name);
+        $this->template->setTitle($this->config->getValue(Config::PROJECT_NAME));
 
         // Get all possible versions
         $versions = $this->loader->getVersions();
@@ -77,13 +75,13 @@ class Cli extends AbstractClient
             // Collect what we need and hand it to the compiler
             $this->compiler->compile(
                 $tmpFile . DIRECTORY_SEPARATOR . $this->loader->getSystemPathModifier($version),
-                $name . DIRECTORY_SEPARATOR . $version,
+                $this->config->getValue(Config::PROJECT_NAME) . DIRECTORY_SEPARATOR . $version,
                 $versions,
                 $pathModifier
             );
         }
 
-        $this->template->copyTemplateVendorDir(Config::BUILD_PATH. DIRECTORY_SEPARATOR .$name .
+        $this->template->copyTemplateVendorDir(Config::BUILD_PATH. DIRECTORY_SEPARATOR .$this->config->getValue(Config::PROJECT_NAME) .
             DIRECTORY_SEPARATOR . "library"
         );
 
