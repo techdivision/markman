@@ -10,29 +10,29 @@
  *
  * @category   Appserver
  * @package    TechDivision_Markman
- * @subpackage Clients
+ * @subpackage Interfaces
  * @author     Bernhard Wick <b.wick@techdivision.com>
  * @copyright  2014 TechDivision GmbH - <info@techdivision.com>
  * @license    http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
  * @link       http://www.techdivision.com/
  */
 
-namespace TechDivision\Markman\Clients;
+namespace TechDivision\Markman\Interfaces;
 
 /**
- * TechDivision\Markman\Clients\Post
+ * TechDivision\Markman\Interfaces\ClientInterface
  *
- * Offers a client to invoke markman compilation by POST requests
+ * Interface describing
  *
  * @category   Appserver
  * @package    TechDivision_Markman
- * @subpackage Clients
+ * @subpackage Interfaces
  * @author     Bernhard Wick <b.wick@techdivision.com>
  * @copyright  2014 TechDivision GmbH - <info@techdivision.com>
  * @license    http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
  * @link       http://www.techdivision.com/
  */
-class Post extends AbstractClient
+interface ClientInterface
 {
     /**
      * Will use a config instance to being used by markman based on the input the client gets
@@ -43,8 +43,7 @@ class Post extends AbstractClient
      *
      * @return \TechDivision\Markman\Config
      */
-    public function setConfigFromArgs($args)
-    {
-
-    }
+    public function setConfigFromArgs($args);
 }
+
+ 

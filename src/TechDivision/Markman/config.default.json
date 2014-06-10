@@ -1,7 +1,4 @@
 {
-    "project-name": "appserver.io",
-    "loader-handler": "github",
-    "handler-string": "techdivision/TechDivision_AppserverDocumentation",
     "file-mapping": {
         "README" : "index"
     }

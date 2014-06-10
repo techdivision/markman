@@ -22,6 +22,7 @@ namespace TechDivision\Markman\Clients;
 use TechDivision\Markman\Config;
 use TechDivision\Markman\Loader;
 use TechDivision\Markman\Compiler;
+use TechDivision\Markman\Interfaces\ClientInterface;
 
 /**
  * TechDivision\Markman\Clients\AbstractClient
@@ -36,7 +37,7 @@ use TechDivision\Markman\Compiler;
  * @license    http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
  * @link       http://www.techdivision.com/
  */
-class AbstractClient
+abstract class AbstractClient implements ClientInterface
 {
     /**
      * An instance of the configuration
@@ -60,12 +61,15 @@ class AbstractClient
     protected $compiler;
 
     /**
-     * Default constructor
+     * Initialise the client
      */
-    public function __construct()
+    public function init()
     {
-        // Prepare the configuration
-        $this->config = new Config();
+        // Prepare the configuration if not done already
+        if (!isset($this->config)) {
+
+            $this->config = new Config();
+        }
 
         // Get ourselves a loader and compiler
         $this->loader = new Loader($this->config);

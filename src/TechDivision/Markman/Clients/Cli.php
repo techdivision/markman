@@ -20,12 +20,7 @@
 namespace TechDivision\Markman\Clients;
 
 use TechDivision\Markman\Config;
-use TechDivision\Markman\Loader;
-use TechDivision\Markman\Compiler;
-use TechDivision\Markman\Utils\Template;
 
-// Let's get bootstrapped
-require_once __DIR__ . DIRECTORY_SEPARATOR . 'bootstrapping.php';
 /**
  * TechDivision\Markman\Clients\Cli
  *
@@ -41,7 +36,57 @@ require_once __DIR__ . DIRECTORY_SEPARATOR . 'bootstrapping.php';
  */
 class Cli extends AbstractClient
 {
+    /**
+     * Arguments of files we will parse and regenerate using our compiler
+     *
+     * @var array $allowedExtensions
+     */
+    protected $allowedArguments;
 
+    /**
+     * Default constructor
+     */
+    public function __construct()
+    {
+        // Fill our allowed arguments and map them to config values
+        $this->allowedArguments = array(
+            'n' => Config::PROJECT_NAME,
+            's' => Config::LOADER_HANDLER,
+            'c' => Config::HANDLER_STRING
+        );
+    }
+
+    /**
+     * Will use a config instance to being used by markman based on the input the client gets
+     *
+     * @param mixed $args The arguments coming from the client's own input method
+     *
+     * @throws \Exception
+     *
+     * @return \TechDivision\Markman\Config
+     */
+    public function setConfigFromArgs($args)
+    {
+        // Get a config instance
+        $config = new Config();
+
+        // Iterate over all args and check if we can use them
+        foreach ($args as $option => $value) {
+
+            // If we do not know this option we will fail
+            if (!isset($this->allowedArguments[$option])) {
+
+                throw new \Exception('Unknown command line argument ' . $option);
+            }
+
+            // Set the value to the config
+            $config->setValue($this->allowedArguments[$option], $value);
+        }
+
+        // Validate the configuration. We do not have to catch any exceptions, the calling script does already
+        $config->validate();
+
+        // Still here? Sounds good. Set the config and go back to the script
+        $this->config = $config;
+    }
 }
-$cli = new Cli();
-$cli->run();
