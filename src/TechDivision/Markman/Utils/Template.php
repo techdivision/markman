@@ -65,9 +65,11 @@ class Template
     const DEFAULT_TEMPLATE_NAME = 'default';
 
     /**
+     * Default constructor
      *
+     * @param \TechDivision\Markman\Config $config The project's configuration instance
      */
-    public function  __construct(Config $config)
+    public function __construct(Config $config)
     {
         // safe the config for later
         $this->config = $config;
@@ -79,11 +81,9 @@ class Template
             $templateName = $this->config->getValue(Config::TEMPLATE_NAME);
         }
         // Now we can create the paths we want :)
-        $this->templateBasePath = $this->config->getValue(
-                Config::TEMPLATE_PATH
-            ) . DIRECTORY_SEPARATOR . $templateName . DIRECTORY_SEPARATOR;
+        $this->templateBasePath = $this->config->getValue(Config::TEMPLATE_PATH) . DIRECTORY_SEPARATOR .
+            $templateName . DIRECTORY_SEPARATOR;
         $this->vendorBasePath = $this->templateBasePath . self::VENDOR_DIR;
-
 
         // Prepare the template
         $this->prepareTemplate();
@@ -93,6 +93,8 @@ class Template
     }
 
     /**
+     * Getter for the title
+     *
      * @return string
      */
     public function getTitle()
@@ -117,6 +119,8 @@ class Template
     }
 
     /**
+     * 
+     *
      * @param array $contentElements
      * @return mixed|string
      */

@@ -24,7 +24,6 @@ use TechDivision\Markman\Loader;
 use TechDivision\Markman\Compiler;
 use TechDivision\Markman\Utils\Template;
 
-
 // Let's get bootstrapped
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'bootstrapping.php';
 /**
