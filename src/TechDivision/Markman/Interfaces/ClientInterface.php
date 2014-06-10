@@ -45,5 +45,3 @@ interface ClientInterface
      */
     public function setConfigFromArgs($args);
 }
-
- 

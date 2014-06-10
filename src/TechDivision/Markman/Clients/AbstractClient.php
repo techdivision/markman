@@ -62,6 +62,8 @@ abstract class AbstractClient implements ClientInterface
 
     /**
      * Initialise the client
+     *
+     * @return void
      */
     public function init()
     {
@@ -79,6 +81,8 @@ abstract class AbstractClient implements ClientInterface
     /**
      * This method will start the whole process of fetching the documentation and compiling it into a complete
      * and flat html documentation.
+     *
+     * @return void
      */
     public function run()
     {
