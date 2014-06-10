@@ -19,6 +19,7 @@
 
 namespace TechDivision\Markman\Utils;
 
+use TechDivision\Markman\Config;
 
 /**
  * TechDivision\Markman\Utils\File
@@ -35,64 +36,91 @@ namespace TechDivision\Markman\Utils;
  */
 class Template
 {
+    /**
+     * An instance of the configuration
+     *
+     * @var \TechDivision\Markman\Config $config
+     */
+    protected $config;
 
-    private $templateName = 'default';
+    /**
+     * The template content
+     *
+     * @var string $baseTemplate
+     */
+    protected $baseTemplate;
 
+    /**
+     * The directory we keep CSS and JS libs in
+     *
+     * @const string VENDOR_DIR
+     */
+    const VENDOR_DIR = 'library';
 
-    private $templateBasePath = '/Users/roettigl/PhpstormProjects/markman/templates/default/index.html';
+    /**
+     * The default configuration file name.
+     *
+     * @const string DEFAULT_CONFIG_FILE
+     */
+    const DEFAULT_TEMPLATE_NAME = 'default';
 
-    private $vendorBasePath = '/Users/roettigl/PhpstormProjects/markman/templates/default/library';
-
-    private $vendorUrl = 'http://localhost/markman/appserver.io/library';
-
-    private $title = '';
-
-    private $baseTemplate = '';
-
-    public function  __construct($title = "")
+    /**
+     *
+     */
+    public function  __construct(Config $config)
     {
-        $this->title = $title;
-        $this->prepareTemplate();
-    }
+        // safe the config for later
+        $this->config = $config;
 
+        // Get the paths we need for our template engine. First of all check if we got a custom template
+        $templateName = self::DEFAULT_TEMPLATE_NAME;
+        if ($this->config->hasValue(Config::TEMPLATE_NAME)) {
+
+            $templateName = $this->config->getValue(Config::TEMPLATE_NAME);
+        }
+        // Now we can create the paths we want :)
+        $this->templateBasePath = $this->config->getValue(
+                Config::TEMPLATE_PATH
+            ) . DIRECTORY_SEPARATOR . $templateName . DIRECTORY_SEPARATOR;
+        $this->vendorBasePath = $this->templateBasePath . self::VENDOR_DIR;
+
+
+        // Prepare the template
+        $this->prepareTemplate();
+
+        // Also copy CSS, JS ect. to the project dir
+        $this->copyTemplateVendorDir();
+    }
 
     /**
      * @return string
      */
     public function getTitle()
     {
-        return $this->title;
+        return $this->config->getValue(Config::PROJECT_NAME);
     }
 
     /**
-    /**
-     * @param string $title
+     *
      */
-    public function setTitle($title)
-    {
-        $this->title = $title;
-    }
-
-
     public function prepareTemplate()
     {
-        $this->baseTemplate = file_get_contents($this->templateBasePath);
+        $this->baseTemplate = file_get_contents($this->templateBasePath . 'index.html');
 
-        $contentElements = array('{head-title}' => $this->title,
-            '{project-name}' => $this->title,
-            '{base-url-css}' => $this->vendorUrl);
+        $contentElements = array(
+            '{head-title}' => $this->config->getValue(Config::PROJECT_NAME),
+            '{project-name}' => $this->config->getValue(Config::PROJECT_NAME),
+            '{base-url-css}' => self::VENDOR_DIR
+        );
 
         $this->baseTemplate = $this->getTemplate($contentElements);
-
     }
 
-
     /**
-     * @param $src
      * @param array $contentElements
      * @return mixed|string
      */
-   public  function getTemplate(array $contentElements)
+    public function getTemplate(array $contentElements)
     {
         $content = $this->baseTemplate;
 
@@ -104,41 +132,17 @@ class Template
     }
 
     /**
-     * @param $targetPath
+     *
      */
-    public function copyTemplateVendorDir($targetPath)
+    protected function copyTemplateVendorDir()
     {
-        $this->recursiveCopy($this->vendorBasePath, $targetPath);
+        // Get a file util class and recursively copy all the vendor stuff to the project dir
+        $fileUtil = new File();
+        $fileUtil->recursiveCopy(
+            $this->vendorBasePath,
+            $this->config->getValue(Config::BUILD_PATH) . DIRECTORY_SEPARATOR .
+            $this->config->getValue(Config::PROJECT_NAME) . DIRECTORY_SEPARATOR .
+            self::VENDOR_DIR
+        );
     }
-
-
-    protected function recursiveCopy($src, $dst)
-    {
-
-        // If source is not a directory stop processing
-        if (!is_dir($src)) return false;
-
-
-        echo  $dst;
-
-        // If the destination directory does not exist create it
-        if (!is_dir($dst)) {
-            if (!mkdir($dst)) {
-                // If the destination directory could not be created stop processing
-                return false;
-            }
-        }
-
-        // Open the source directory to read in files
-        $i = new \DirectoryIterator($src);
-        foreach ($i as $f) {
-            if ($f->isFile()) {
-                copy($f->getRealPath(), "$dst/" . $f->getFilename());
-            } else if (!$f->isDot() && $f->isDir()) {
-                $this->recursiveCopy($f->getRealPath(), "$dst/$f");
-            }
-        }
-    }
-
-
 }

@@ -60,6 +60,7 @@ class Config
      */
     const TMP_PATH = 'TMP_PATH';
     const BUILD_PATH = 'BUILD_PATH';
+    const TEMPLATE_PATH = 'TEMPLATE_PATH';
     const NAVIGATION_FILE_NAME = 'NAVIGATION_FILE_NAME';
     const VERSION_SWITCHER_FILE_NAME = 'VERSION_SWITCHER_FILE_NAME';
     const NAVIGATION_BASE = 'NAVIGATION_BASE';
@@ -67,6 +68,7 @@ class Config
     const FILE_MAPPING = 'FILE_MAPPING';
     const LOADER_HANDLER = 'LOADER_HANDLER';
     const HANDLER_STRING = 'HANDLER_STRING';
+    const TEMPLATE_NAME = 'TEMPLATE_NAME';
 
     /**
      * Default constructor.
@@ -97,6 +99,7 @@ class Config
             DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
         $this->setValue(self::TMP_PATH, $basePath . 'tmp');
         $this->setValue(self::BUILD_PATH, $basePath . 'build');
+        $this->setValue(self::TEMPLATE_PATH, $basePath . 'templates');
 
         // Also preset the names of version and navigation file
         $this->setValue(self::VERSION_SWITCHER_FILE_NAME, 'versions');
@@ -110,7 +113,7 @@ class Config
      * Sets a value to specific content
      *
      * @param string $valueName The value to set
-     * @param string $value The actual content for the value
+     * @param string $value     The actual content for the value
      *
      * @return void
      */

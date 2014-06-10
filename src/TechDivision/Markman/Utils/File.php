@@ -37,7 +37,7 @@ class File
     /**
      * Will write content to a file without the need for a existing path to it.
      * If the path and its folders do not exist they will be created.
-     * 
+     *
      * @param string $path     The path to write the content to
      * @param string $contents Content to write into provided file path
      *
@@ -59,5 +59,46 @@ class File
 
         // Finally create our file and fill in the content
         return file_put_contents($path . DIRECTORY_SEPARATOR . $file, $contents);
+    }
+
+    /**
+     * Will recursively copy a directory path
+     *
+     * @param string  $src        Source path to copy
+     * @param string  $dst        Destination path to copy to
+     * @param boolean $forceWrite If true we will use fileForceContents() to even without existing directories
+     *
+     * @return bool
+     */
+    public function recursiveCopy($src, $dst, $forceWrite = false)
+    {
+        // If source is not a directory stop processing
+        if (!is_dir($src)) {
+
+            return false;
+        }
+
+        // Split the path into pieces so we can iterate over them
+        $parts = explode(DIRECTORY_SEPARATOR, $dst);
+        $path = '';
+
+        // Iterate over the path pieces and build the path up directory for directory
+        foreach ($parts as $part) {
+            if (!is_dir($path .= DIRECTORY_SEPARATOR . $part)) {
+                mkdir($path);
+            }
+        }
+
+        // Open the source directory to read in files
+        $i = new \DirectoryIterator($src);
+        foreach ($i as $f) {
+            if ($f->isFile()) {
+                copy($f->getRealPath(), "$dst/" . $f->getFilename());
+            } else {
+                if (!$f->isDot() && $f->isDir()) {
+                    $this->recursiveCopy($f->getRealPath(), "$dst/$f");
+                }
+            }
+        }
     }
 }

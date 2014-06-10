@@ -55,8 +55,7 @@ class Cli extends AbstractClient
 
         $this->loader = new Loader($this->config);
         $this->compiler = new Compiler($this->config);
-        $this->template =  new Template();
-        $this->template->setTitle($this->config->getValue(Config::PROJECT_NAME));
+        $this->template =  new Template($this->config);
 
         // Get all possible versions
         $versions = $this->loader->getVersions();
@@ -80,10 +79,6 @@ class Cli extends AbstractClient
                 $pathModifier
             );
         }
-
-        $this->template->copyTemplateVendorDir(Config::BUILD_PATH. DIRECTORY_SEPARATOR .$this->config->getValue(Config::PROJECT_NAME) .
-            DIRECTORY_SEPARATOR . "library"
-        );
 
         // Clear the tmp dir
         $this->clearTmpDirectory();
