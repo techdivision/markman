@@ -61,16 +61,29 @@ abstract class AbstractClient implements ClientInterface
     protected $compiler;
 
     /**
+     * Default constructor in which we check the time of the last run, if it was too recent we will not
+     * do anything as a security precaution.
+     */
+    public function __construct()
+    {
+        // Get the mTime of the build dir
+        $this->config = new Config();
+        $mTime = filemtime($this->config->getValue(Config::BUILD_PATH));
+
+        // If the mTime of the build dir is higher as NOW - the configured minimum we will fail
+        if ((time() - $this->config->getValue(Config::MIN_TIME_INTERVAL) * 60) < $mTime) {
+
+            throw new \Exception('Too recent usage of markman. Please be aware that we do not like flooding.');
+        }
+    }
+
+    /**
      * Initialise the client
+     *
+     * @return void
      */
     public function init()
     {
-        // Prepare the configuration if not done already
-        if (!isset($this->config)) {
-
-            $this->config = new Config();
-        }
-
         // Get ourselves a loader and compiler
         $this->loader = new Loader($this->config);
         $this->compiler = new Compiler($this->config);
@@ -79,6 +92,8 @@ abstract class AbstractClient implements ClientInterface
     /**
      * This method will start the whole process of fetching the documentation and compiling it into a complete
      * and flat html documentation.
+     *
+     * @return void
      */
     public function run()
     {

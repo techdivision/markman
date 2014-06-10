@@ -12,7 +12,7 @@
     },
     "autoload": {
         "psr-0": {
-            "TechDivision": ["src/", "tests/"]
+            "TechDivision": ["", "tests/", "src/"]
         }
     },
     "config": {
