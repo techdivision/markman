@@ -54,6 +54,8 @@ echo "Ok";
  * Will print a CLI formatted error message.
  *
  * @param string $message Error message
+ *
+ * @return void
  */
 function returnError($message)
 {

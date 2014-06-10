@@ -19,6 +19,8 @@
 
 namespace TechDivision\Markman\Clients;
 
+use TechDivision\Markman\Config;
+
 /**
  * TechDivision\Markman\Clients\Post
  *
@@ -42,9 +44,27 @@ class Post extends AbstractClient
      * @throws \Exception
      *
      * @return \TechDivision\Markman\Config
+     *
+     * @TODO use different client handlers here!
      */
     public function setConfigFromArgs($args)
     {
+        // If we do not get GitHub JSON we will fail
+        if (!isset($args['data']) || ($data = json_decode($args['data'])) === null ||
+            !isset($data->repository) || !isset($data->repository->full_name)) {
 
+            throw new \Exception('Did not get any useful data within this POST request');
+        }
+
+        // Get a config instance
+        $config = new Config();
+        $config->setValue(Config::LOADER_HANDLER, 'github');
+        $config->setValue(Config::HANDLER_STRING, $data->repository->full_name);
+
+        // Validate the configuration. We do not have to catch any exceptions, the calling script does already
+        $config->validate();
+
+        // Still here? Sounds good. Set the config and go back to the script
+        $this->config = $config;
     }
 }
