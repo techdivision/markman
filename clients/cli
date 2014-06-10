@@ -1,0 +1,88 @@
+<?php
+/**
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ *
+ * PHP version 5
+ *
+ * This file is used to invoke and control markman using a command line interface.
+ * This file makes use of the \TechDivision\Markman\Clients\Cli class internally.
+ *
+ * @category   Tools
+ * @package    TechDivision
+ * @subpackage Markman
+ * @author     Bernhard Wick <b.wick@techdivision.com>
+ * @copyright  2014 TechDivision GmbH - <info@techdivision.com>
+ * @license    http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * @link       http://www.techdivision.com/
+ */
+
+// Let's get our autoloader
+require_once __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+
+// Get ourselves an instance of the Cli class
+$cli = new TechDivision\Markman\Clients\Cli();
+
+// No on needs argv[0]
+unset($argv[0]);
+
+// Pass the commandline args, if there is trouble we can catch it
+try {
+
+    // Try to generate a configuration from the passed arguments and set it to markman
+    $cli->setConfigFromArgs(getopt('n:s:c:'));
+
+} catch (Exception $e) {
+
+    // That did not work that well, print a notice and usage information
+    printError($e->getMessage());
+    printUsage();
+
+    // Exiting to prevent errors within markman
+    exit;
+}
+
+// Init the client
+$cli->init();
+
+// Now do the actual work
+$cli->run();
+
+/**
+ * Will print a CLI formatted error message.
+ *
+ * @param string $message Error message
+ */
+function printError($message)
+{
+    printf('    ERROR
+        %s
+        ', $message);
+}
+
+/**
+ * Will print usage information to stdout
+ */
+function printUsage()
+{
+    printf('
+    NAME
+        markman cli client
+
+    DESCRIPTION
+        Using the cli client you can create a html documentation based on an online one in markdown format.
+
+        Please stick to following options for configuration:
+
+        -n  Name of the project (MANDATORY)
+
+        -s  Source of the documentation, internally also called loader handler (MANDATORY)
+
+        -c  Connection string for the loader handler (MANDATORY)
+
+    '
+    );
+}

@@ -88,11 +88,12 @@ class Config
         // We have to load the configuration file. If there is none given we will load the default one
         if ($configFilePath === null) {
 
-            $configFilePath = __DIR__ . DIRECTORY_SEPARATOR . self::DEFAULT_CONFIG_FILE;
-        }
+            $this->load(__DIR__ . DIRECTORY_SEPARATOR . self::DEFAULT_CONFIG_FILE, false);
 
-        // Try to load the config file
-        $this->load($configFilePath);
+        } else {
+
+            $this->load($configFilePath);
+        }
 
         // We at least need to know which dir to download to and build in
         $basePath = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' .
@@ -198,13 +199,14 @@ class Config
     /**
      * Will load a certain configuration file into this instance. Might throw an exception if the file is not valid
      *
-     * @param string $file The path of the configuration file we should load
+     * @param string  $file     The path of the configuration file we should load
+     * @param boolean $validate Weather or not we will validate the config after reading the file
      *
      * @throws \Exception
      *
      * @return void
      */
-    public function load($file)
+    public function load($file, $validate = true)
     {
         // Check if we can read from the file
         if (!is_readable($file)) {
@@ -237,8 +239,11 @@ class Config
             $this->setValue($valueName, $configValue);
         }
 
-        // Done? Then validate what we got
-        $this->validate();
+        // Done? Then validate if we are told to
+        if ($validate) {
+
+            $this->validate();
+        }
     }
 
     /**
