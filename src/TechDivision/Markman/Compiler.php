@@ -20,6 +20,8 @@
 namespace TechDivision\Markman;
 
 use TechDivision\Markman\Utils\File;
+use TechDivision\Markman\Utils\Template;
+
 
 /**
  * TechDivision\Markman\Compiler
@@ -78,6 +80,7 @@ class Compiler
 
         // Get ourselves an instance of the Parsedown compiler
         $this->compiler = new \Parsedown();
+        $this->template = new Template($config->getValue(Config::PROJECT_NAME));
 
         // Prefill the allowed and preserved extensions
         $this->allowedExtensions = array_flip(array('md', 'markdown'));
@@ -145,9 +148,11 @@ class Compiler
                 $targetFile = str_replace($haystacks, $this->config->getValue(Config::FILE_MAPPING), $targetFile);
             }
 
+            $content =  $this->template->getTemplate(array('{content}'=> $rawContent));
+
             // Save the processed (or not) content to a file.
             // Recreate the path the file originally had
-            $fileUtil->fileForceContents($pathPrefix . $targetFile, $rawContent);
+            $fileUtil->fileForceContents($pathPrefix . $targetFile,  $content);
         }
 
         // Now let's generate the navigation
