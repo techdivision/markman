@@ -97,9 +97,6 @@ abstract class AbstractClient implements ClientInterface
      */
     public function run()
     {
-        // Get the modifier for the path
-        $pathModifier = 'docs';
-
         // Get all possible versions
         $versions = $this->loader->getVersions();
 
@@ -118,8 +115,7 @@ abstract class AbstractClient implements ClientInterface
             $this->compiler->compile(
                 $tmpFile . DIRECTORY_SEPARATOR . $this->loader->getSystemPathModifier($version),
                 $this->config->getValue(Config::PROJECT_NAME) . DIRECTORY_SEPARATOR . $version,
-                $versions,
-                $pathModifier
+                $versions
             );
         }
 

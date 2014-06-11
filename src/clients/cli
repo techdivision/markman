@@ -33,7 +33,7 @@ unset($argv[0]);
 try {
 
     // Try to generate a configuration from the passed arguments and set it to markman
-    $cli->setConfigFromArgs(getopt('n:s:c:'));
+    $cli->setConfigFromArgs(getopt('n:s:c:m::'));
 
 } catch (Exception $e) {
 

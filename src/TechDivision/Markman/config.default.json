@@ -1,4 +1,5 @@
 {
+    "path-modifier": "docs",
     "project-name":"unknown",
     "file-mapping": {
         "README" : "index"

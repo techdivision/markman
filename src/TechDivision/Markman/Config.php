@@ -70,6 +70,7 @@ class Config
     const HANDLER_STRING = 'HANDLER_STRING';
     const TEMPLATE_NAME = 'TEMPLATE_NAME';
     const MIN_TIME_INTERVAL = 'MIN_TIME_INTERVAL';
+    const PATH_MODIFIER = 'PATH_MODIFIER';
 
     /**
      * Default constructor.

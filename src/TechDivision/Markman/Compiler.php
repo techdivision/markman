@@ -95,11 +95,10 @@ class Compiler
      * @param string $tmpFilesPath   Path to the temporary, raw, documentation
      * @param string $targetBasePath Path to write the documentation to
      * @param array  $versions       Versions a documentation exists for
-     * @param string $pathModifier   A certain part of the folder structure, like a base path we have to know
      *
      * @return bool
      */
-    public function compile($tmpFilesPath, $targetBasePath, $versions, $pathModifier = '')
+    public function compile($tmpFilesPath, $targetBasePath, $versions)
     {
         // Is there anything useful here?
         if (!is_readable($tmpFilesPath)) {
@@ -156,7 +155,7 @@ class Compiler
         }
 
         // Now let's generate the navigation
-        $this->generateNavigation($pathPrefix . $pathModifier, $pathPrefix);
+        $this->generateNavigation($pathPrefix . $this->config->getValue(Config::PATH_MODIFIER), $pathPrefix);
     }
 
     /**
