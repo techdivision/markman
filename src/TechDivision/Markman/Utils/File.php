@@ -101,4 +101,28 @@ class File
             }
         }
     }
+
+    /**
+     * Will produce a relative path which will reverse existing path depth.
+     * Example: /path/to/target => ../../../
+     *
+     * @param string $path The path to be reversed
+     *
+     * @return string
+     */
+    public function generateReversePath($path)
+    {
+        // Split up the path
+        $parts = explode(DIRECTORY_SEPARATOR, $path);
+
+        // Iterate count($parts)-times and create up a string
+        $reversePath = '';
+        for ($i = 0; $i < count($parts); $i++) {
+
+            $reversePath .= '..' . DIRECTORY_SEPARATOR;
+        }
+
+        // Return what we got
+        return $reversePath;
+    }
 }

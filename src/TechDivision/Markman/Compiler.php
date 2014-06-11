@@ -109,9 +109,28 @@ class Compiler
         // First of all we need a version file
         $this->compileVersionSwitch($versions);
 
-        // Path prefix
+        // Path prefix which points into the generated folder with the specific version we are compiling right now
         $pathPrefix = $this->config->getValue(Config::BUILD_PATH) . DIRECTORY_SEPARATOR .
             $targetBasePath . DIRECTORY_SEPARATOR;
+
+        // Now let's generate the navigation
+        $this->generateNavigation($tmpFilesPath, $pathPrefix);
+
+        // Create the html content
+        $this->template->getTemplate(
+            array(
+                '{version-switcher-element}' => file_get_contents(
+                    $this->config->getValue(Config::BUILD_PATH) . DIRECTORY_SEPARATOR .
+                    $this->config->getValue(Config::PROJECT_NAME) . DIRECTORY_SEPARATOR .
+                    $this->config->getValue(Config::VERSION_SWITCHER_FILE_NAME) . '.html'
+                ),
+                '{navigation-element}' => file_get_contents(
+                    $pathPrefix .
+                    $this->config->getValue(Config::NAVIGATION_FILE_NAME) . '.html'
+                )
+            ),
+            true
+        );
 
         // Get an iterator over the part of the directory we want
         $iterator = $this->getDirectoryIterator($tmpFilesPath);
@@ -123,7 +142,7 @@ class Compiler
             // Get the content of the file
             $rawContent = file_get_contents($file);
 
-            // Create the name of the target file
+            // Create the name of the target file relative to the containing base directory (tmp or build)
             $targetFile = str_replace($tmpFilesPath, '', $file);
 
             // If the file has a markdown extension we will compile it, if it is something we have to preserve we
@@ -146,16 +165,26 @@ class Compiler
                 $targetFile = str_replace($haystacks, $this->config->getValue(Config::FILE_MAPPING), $targetFile);
             }
 
-            // Create the html content
-            $content =  $this->template->getTemplate(array('{content}'=> $rawContent));
+            // Create the html content. We will need the reverse path of the current file here
+            $reversePath = $fileUtil->generateReversePath(
+                substr($targetFile, 0, strrpos($targetFile, DIRECTORY_SEPARATOR))
+            );
+            // Now fill the template a last time and retrieve the complete template
+            $content =  $this->template->getTemplate(
+                array(
+                    '{content}' => $rawContent,
+                    '{relative-base-url}' => $reversePath . Template::VENDOR_DIR,
+                    '{navigation-base}' => substr($reversePath, 0, strrpos($reversePath, DIRECTORY_SEPARATOR) + 1)
+                )
+            );
+
+            // Clear the file specific changes of the template
+            $this->template->clearTemplate();
 
             // Save the processed (or not) content to a file.
             // Recreate the path the file originally had
             $fileUtil->fileForceContents($pathPrefix . $targetFile, $content);
         }
-
-        // Now let's generate the navigation
-        $this->generateNavigation($pathPrefix . $this->config->getValue(Config::PATH_MODIFIER), $pathPrefix);
     }
 
     /**
@@ -213,7 +242,12 @@ class Compiler
      */
     protected function generateRecursiveList(\DirectoryIterator $dir, $nodePath)
     {
+        // We will need a flipped file mapping as we work from the tmp dir
+        $fileMapping = array_flip($this->config->getValue(Config::FILE_MAPPING));
+        $mappedIndexFile = $fileMapping['index'] . '.md';
+
         $out = '';
+        $fileUtil = new File();
         foreach ($dir as $node) {
 
             // Create the link path
@@ -226,9 +260,9 @@ class Compiler
                 $nodePath .= $node . DIRECTORY_SEPARATOR;
 
                 // If the directory contains an index file we will link it to the dir
-                if (isset(array_flip(scandir($node->getRealPath()))['index.html'])) {
+                if (isset(array_flip(scandir($node->getRealPath()))[$mappedIndexFile])) {
 
-                    $nodeName = '<a href="' . $linkPath . DIRECTORY_SEPARATOR . 'index.html">' . $node . '</a>';
+                    $nodeName = '<a href="{navigation-base}' . $linkPath . DIRECTORY_SEPARATOR . 'index.html">' . $node . '</a>';
 
                 } else {
 
@@ -247,13 +281,13 @@ class Compiler
                 // A file is always a leaf, so it cannot be an ul element
 
                 // We will skip index files as actual leaves
-                if ($node == 'index.html') {
+                if ($node == $mappedIndexFile) {
 
                     continue;
                 }
 
                 // Create the actual leaf
-                $out .= '<li node="' . strstr($node, ".", true) . '"><a href="' .
+                $out .= '<li node="' . strstr($node, ".", true) . '"><a href="{navigation-base}' .
                     $linkPath . '">' .
                     strstr($node, ".", true) . '</a></li>';
             }

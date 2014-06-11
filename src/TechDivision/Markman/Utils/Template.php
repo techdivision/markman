@@ -44,11 +44,25 @@ class Template
     protected $config;
 
     /**
-     * The template content
+     * The template content after preparation
      *
      * @var string $baseTemplate
      */
     protected $baseTemplate;
+
+    /**
+     * The current template content containing file specific changes
+     *
+     * @var string $currentTemplate
+     */
+    protected $currentTemplate;
+
+    /**
+     * The base path of where the complete content will lie
+     *
+     * @var string $targetBasePath
+     */
+    protected $targetBasePath;
 
     /**
      * The directory we keep CSS and JS libs in
@@ -84,6 +98,8 @@ class Template
         $this->templateBasePath = $this->config->getValue(Config::TEMPLATE_PATH) . DIRECTORY_SEPARATOR .
             $templateName . DIRECTORY_SEPARATOR;
         $this->vendorBasePath = $this->templateBasePath . self::VENDOR_DIR;
+        $this->targetBasePath = $this->config->getValue(Config::BUILD_PATH) . DIRECTORY_SEPARATOR .
+            $this->config->getValue(Config::PROJECT_NAME) . DIRECTORY_SEPARATOR;
 
         // Prepare the template
         $this->prepareTemplate();
@@ -103,40 +119,68 @@ class Template
     }
 
     /**
+     * Will prepare the template by including fixed elements into it.
      *
+     * @return void
      */
     public function prepareTemplate()
     {
+        // Get the templates base content
         $this->baseTemplate = file_get_contents($this->templateBasePath . 'index.html');
 
+        // Collect content elements which do not change per file
         $contentElements = array(
-            '{head-title}' => $this->config->getValue(Config::PROJECT_NAME),
-            '{project-name}' => $this->config->getValue(Config::PROJECT_NAME),
-            '{base-url-css}' => self::VENDOR_DIR
+                '{head-title}' => $this->config->getValue(Config::PROJECT_NAME),
+                '{project-name}' => $this->config->getValue(Config::PROJECT_NAME)
         );
 
+        // Render them in
         $this->baseTemplate = $this->getTemplate($contentElements);
     }
 
     /**
+     * Will include passed content elements into the current template content.
+     * Doing this several times allows for step-by-step template buildup
      *
+     * @param array   $contentElements Elements which will be rendered into the template
+     * @param boolean $persist         If you want the template changes to be persistent against clearTemplate()
      *
-     * @param array $contentElements
      * @return mixed|string
      */
-    public function getTemplate(array $contentElements)
+    public function getTemplate(array $contentElements, $persist = false)
     {
-        $content = $this->baseTemplate;
+        // Write to current template to preserve the baseTemplate
+        $this->currentTemplate = $this->baseTemplate;
 
+        // Include the elements into the template
         foreach ($contentElements as $contentElementKey => $contentElementValue) {
-            $content = str_replace($contentElementKey, $contentElementValue, $content);
+            $this->currentTemplate = str_replace($contentElementKey, $contentElementValue, $this->currentTemplate);
         }
 
-        return $content;
+        // If we have to persist our changes we have to write the current template back into the base one
+        if ($persist) {
+
+            $this->baseTemplate = $this->currentTemplate;
+        }
+
+        // Return the rendered template
+        return $this->currentTemplate;
     }
 
     /**
+     * Will clear the currently used template so there will be no overwriting of content
      *
+     * @return void
+     */
+    public function clearTemplate()
+    {
+        $this->currentTemplate = null;
+    }
+
+    /**
+     * Will copy template data into the build directory
+     *
+     * @return void
      */
     protected function copyTemplateVendorDir()
     {
@@ -144,9 +188,7 @@ class Template
         $fileUtil = new File();
         $fileUtil->recursiveCopy(
             $this->vendorBasePath,
-            $this->config->getValue(Config::BUILD_PATH) . DIRECTORY_SEPARATOR .
-            $this->config->getValue(Config::PROJECT_NAME) . DIRECTORY_SEPARATOR .
-            self::VENDOR_DIR
+            $this->targetBasePath . self::VENDOR_DIR
         );
     }
 }
