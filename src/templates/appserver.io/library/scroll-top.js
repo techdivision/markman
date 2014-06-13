@@ -6,7 +6,7 @@
   			autoLinkPos: 'toTop-right', //toTop-left, toTop-center
 			autoLinkClass: 'btn btn-large btn-danger', // example:'badge badge-warning' 'btn btn-large btn-danger'
 			autoLinkText: 'nach oben', //Linktext, optional wenn Icon vorhanden
-			autoLinkIcon: 'icon-chevron-up icon-white', //Bootstrap Icon, optional wenn Text vorhanden
+			autoLinkIcon: 'icon-chevron-up icon-black', //Bootstrap Icon, optional wenn Text vorhanden
 			easingType: 'easeOutBounce',  //default without Easing: 'linear' or 'swing'		
 			min: 400, //Anzahl gescrollter Pixel bis zum Einblenden
 			inDelay:500,
