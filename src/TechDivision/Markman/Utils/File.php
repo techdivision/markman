@@ -64,13 +64,11 @@ class File
     /**
      * Will recursively copy a directory path
      *
-     * @param string  $src        Source path to copy
-     * @param string  $dst        Destination path to copy to
-     * @param boolean $forceWrite If true we will use fileForceContents() to even without existing directories
-     *
+     * @param string  $src Source path to copy
+     * @param string  $dst Destination path to copy to
      * @return bool
      */
-    public function recursiveCopy($src, $dst, $forceWrite = false)
+    public function recursiveCopy($src, $dst)
     {
         // If source is not a directory stop processing
         if (!is_dir($src)) {
@@ -100,6 +98,45 @@ class File
                 }
             }
         }
+    }
+
+    /**
+     * Will delete a directory with all its content
+     *
+     * @param string $dir Directory to delete
+     *
+     * @return void
+     */
+    public function recursiveDirectoryDelete($dir)
+    {
+        // Get the iterators needed to grab all files within the target directory
+        $iterator = new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS);
+        $files = new \RecursiveIteratorIterator($iterator, \RecursiveIteratorIterator::CHILD_FIRST);
+
+        // Iterator over all child nodes and delete them all
+        foreach($files as $file) {
+
+            // Do not delete the meta-nodes "." and ".."
+            if ($file->getFilename() === '.' || $file->getFilename() === '..') {
+
+                continue;
+            }
+
+            // If we got a directory remove it, if we got a file unlink it
+            if ($file->isDir()){
+
+                // Remove the directory
+                rmdir($file->getRealPath());
+
+            } else {
+
+                // Unlink the file
+                unlink($file->getRealPath());
+            }
+        }
+
+        // Finally remove the actual directory
+        rmdir($dir);
     }
 
     /**

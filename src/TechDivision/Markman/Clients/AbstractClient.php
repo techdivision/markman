@@ -23,6 +23,7 @@ use TechDivision\Markman\Config;
 use TechDivision\Markman\Loader;
 use TechDivision\Markman\Compiler;
 use TechDivision\Markman\Interfaces\ClientInterface;
+use TechDivision\Markman\Utils\File;
 
 /**
  * TechDivision\Markman\Clients\AbstractClient
@@ -130,17 +131,18 @@ abstract class AbstractClient implements ClientInterface
      */
     protected function clearTmpDirectory()
     {
-        // Clean the tmp dir
+        // Clean the tmp dir, we will need a file util to do so
+        $fileUtil = new File();
         foreach (scandir($this->config->getValue(Config::TMP_PATH)) as $tmpFile) {
 
-            // Do not delete our .gitignore file
-            if ($tmpFile === '.gitignore' || $tmpFile === '.') {
+            // Do not delete our .gitignore file or parent directories!
+            if ($tmpFile === '.gitignore' || $tmpFile === '.' || $tmpFile === '..') {
 
                 continue;
             }
 
             // Delete the file
-            unlink($this->config->getValue(Config::TMP_PATH) . DIRECTORY_SEPARATOR . $tmpFile);
+            $fileUtil->recursiveDirectoryDelete($this->config->getValue(Config::TMP_PATH) . DIRECTORY_SEPARATOR . $tmpFile);
         }
     }
 }
