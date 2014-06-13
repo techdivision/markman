@@ -232,7 +232,6 @@ class Compiler
             '<nav id="mp-menu" class="mp-menu">' .
             '<div id="' . $this->config->getValue(Config::NAVIGATION_FILE_NAME) .'" class="mp-level">
                 <h2>' . $this->config->getValue(Config::PROJECT_NAME) . '</h2>
-                <a class="mp-back" href="#">back</a>
                 <ul>' . $this->generateRecursiveList(new \DirectoryIterator($srcPath), '') . '</ul>
             </div></nav>'
         );
@@ -280,9 +279,10 @@ class Compiler
                 }
 
                 // Make a recursion with the new path
-                $out .= '<li node="' . $node . '">' . $nodeName . '
+                $out .= '<li  class="icon-thin-arrow-left" node="' . $node . '">' . $nodeName . '
                     <div class="mp-level">
                         <h2>' . $fileUtil->filenameToHeading($node) . '</h2>
+                        <a class="mp-back" href="#">back</a>
                         <ul>' .
                     $this->generateRecursiveList(new \DirectoryIterator($node->getPathname()), $nodePath) .
                     '</ul></div></li>';
