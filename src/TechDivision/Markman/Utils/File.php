@@ -125,4 +125,36 @@ class File
         // Return what we got
         return $reversePath;
     }
+
+    /**
+     * Will reformat the name of a file to a heading
+     *
+     * @param string $filename Name of a file (best would be without extension)
+     *
+     * @return string
+     */
+    public function filenameToHeading($filename)
+    {
+        // Scrap the file extension if there is one
+        if (strpos($filename, '.') !== false) {
+
+            $filename = strstr($filename, '.', true);
+        }
+
+        // Return ucfirst-ed heading
+        return ucfirst(str_replace(array('-', '_'), array(' ', '.'), $filename));
+    }
+
+    /**
+     * Will convert a heading into a filename (without extension)
+     *
+     * @param string $heading Heading to be converted
+     *
+     * @return string
+     */
+    public function HeadingToFilename($heading)
+    {
+        // Return all low filename
+        return strtolower(str_replace(array(' ', '.'), array('-', '_'), $heading));
+    }
 }

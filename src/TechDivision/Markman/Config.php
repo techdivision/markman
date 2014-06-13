@@ -71,6 +71,7 @@ class Config
     const TEMPLATE_NAME = 'TEMPLATE_NAME';
     const MIN_TIME_INTERVAL = 'MIN_TIME_INTERVAL';
     const PATH_MODIFIER = 'PATH_MODIFIER';
+    const NAVIGATION_HEADINGS_LEVEL = 'NAVIGATION_HEADINGS_LEVEL';
 
     /**
      * Default constructor.
