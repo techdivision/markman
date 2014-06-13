@@ -170,12 +170,15 @@ class Compiler
             $reversePath = $fileUtil->generateReversePath(
                 substr($targetFile, 0, strrpos($targetFile, DIRECTORY_SEPARATOR))
             );
+            $reversePathMinusOne = substr($reversePath, 0, strrpos($reversePath, DIRECTORY_SEPARATOR) + 1);
             // Now fill the template a last time and retrieve the complete template
             $content =  $this->template->getTemplate(
                 array(
                     '{content}' => $rawContent,
                     '{relative-base-url}' => $reversePath . Template::VENDOR_DIR,
-                    '{navigation-base}' => substr($reversePath, 0, strrpos($reversePath, DIRECTORY_SEPARATOR) + 1)
+                    '{navigation-base}' => $reversePathMinusOne,
+                    '{version-switch-base}' => substr($reversePathMinusOne, 0, strrpos($reversePathMinusOne, DIRECTORY_SEPARATOR) + 1),
+                    '{version-switch-file}' => $targetFile
                 )
             );
 
@@ -201,7 +204,8 @@ class Compiler
         $html = '<ul id="' . $this->config->getValue(Config::VERSION_SWITCHER_FILE_NAME) . '">';
         foreach ($versions as $version) {
 
-            $html .= '<li node="' . $version->getName() . '">' . $version->getName() . '</li>';
+            $html .= '<li node="' . $version->getName() . '"><a href="{version-switch-base}' .
+                $version->getName() . '{version-switch-file}">' . $version->getName() . '</a></li>';
         }
         $html .= '</ul>';
 
@@ -279,7 +283,7 @@ class Compiler
                 }
 
                 // Make a recursion with the new path
-                $out .= '<li  class="icon-thin-arrow-left" node="' . $node . '">' . $nodeName . '
+                $out .= '<li node="' . $node . '">' . $nodeName . '
                     <div class="mp-level">
                         <h2>' . $fileUtil->filenameToHeading($node) . '</h2>
                         <a class="mp-back" href="#">back</a>
@@ -340,10 +344,12 @@ class Compiler
         // We need a file util to create URL ready anchors
         $fileUtil = new File();
 
-        // Iterate over the headings and build up a li list
+        // Iterate over the headings and build up a "li" list
         $html = '<div class="mp-level">
                         <h2>' . $nodeName . '</h2>
                         <ul>';
+
+        // Iterate over all headings and build up the "li" list
         foreach ($headings as $heading) {
 
             $html .= '<li class="heading"><a href="#' . $fileUtil->headingToFilename($heading) .
