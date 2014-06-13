@@ -52,7 +52,8 @@ class Cli extends AbstractClient
         $this->allowedArguments = array(
             'n' => Config::PROJECT_NAME,
             's' => Config::LOADER_HANDLER,
-            'c' => Config::HANDLER_STRING
+            'c' => Config::HANDLER_STRING,
+            'm' => Config::PATH_MODIFIER
         );
     }
 

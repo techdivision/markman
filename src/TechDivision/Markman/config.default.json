@@ -1,6 +1,8 @@
 {
+    "path-modifier": "docs",
+    "navigation-headings-level": "2",
     "project-name":"unknown",
     "file-mapping": {
-        "README" : "index"
+        "README.md" : "index.html"
     }
 }

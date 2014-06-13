@@ -20,6 +20,7 @@
 namespace TechDivision\Markman;
 
 use TechDivision\Markman\Utils\File;
+use TechDivision\Markman\Utils\Parsedown;
 use TechDivision\Markman\Utils\Template;
 
 /**
@@ -95,11 +96,10 @@ class Compiler
      * @param string $tmpFilesPath   Path to the temporary, raw, documentation
      * @param string $targetBasePath Path to write the documentation to
      * @param array  $versions       Versions a documentation exists for
-     * @param string $pathModifier   A certain part of the folder structure, like a base path we have to know
      *
      * @return bool
      */
-    public function compile($tmpFilesPath, $targetBasePath, $versions, $pathModifier = '')
+    public function compile($tmpFilesPath, $targetBasePath, $versions)
     {
         // Is there anything useful here?
         if (!is_readable($tmpFilesPath)) {
@@ -110,9 +110,28 @@ class Compiler
         // First of all we need a version file
         $this->compileVersionSwitch($versions);
 
-        // Path prefix
+        // Path prefix which points into the generated folder with the specific version we are compiling right now
         $pathPrefix = $this->config->getValue(Config::BUILD_PATH) . DIRECTORY_SEPARATOR .
             $targetBasePath . DIRECTORY_SEPARATOR;
+
+        // Now let's generate the navigation
+        $this->generateNavigation($tmpFilesPath, $pathPrefix);
+
+        // Added version switcher and navigation elements
+        $this->template->getTemplate(
+            array(
+                '{version-switcher-element}' => file_get_contents(
+                    $this->config->getValue(Config::BUILD_PATH) . DIRECTORY_SEPARATOR .
+                    $this->config->getValue(Config::PROJECT_NAME) . DIRECTORY_SEPARATOR .
+                    $this->config->getValue(Config::VERSION_SWITCHER_FILE_NAME) . '.html'
+                ),
+                '{navigation-element}' => file_get_contents(
+                    $pathPrefix .
+                    $this->config->getValue(Config::NAVIGATION_FILE_NAME) . '.html'
+                )
+            ),
+            true
+        );
 
         // Get an iterator over the part of the directory we want
         $iterator = $this->getDirectoryIterator($tmpFilesPath);
@@ -124,7 +143,7 @@ class Compiler
             // Get the content of the file
             $rawContent = file_get_contents($file);
 
-            // Create the name of the target file
+            // Create the name of the target file relative to the containing base directory (tmp or build)
             $targetFile = str_replace($tmpFilesPath, '', $file);
 
             // If the file has a markdown extension we will compile it, if it is something we have to preserve we
@@ -147,16 +166,26 @@ class Compiler
                 $targetFile = str_replace($haystacks, $this->config->getValue(Config::FILE_MAPPING), $targetFile);
             }
 
-            // Create the html content
-            $content =  $this->template->getTemplate(array('{content}'=> $rawContent));
+            // Create the html content. We will need the reverse path of the current file here
+            $reversePath = $fileUtil->generateReversePath(
+                substr($targetFile, 0, strrpos($targetFile, DIRECTORY_SEPARATOR))
+            );
+            // Now fill the template a last time and retrieve the complete template
+            $content =  $this->template->getTemplate(
+                array(
+                    '{content}' => $rawContent,
+                    '{relative-base-url}' => $reversePath . Template::VENDOR_DIR,
+                    '{navigation-base}' => substr($reversePath, 0, strrpos($reversePath, DIRECTORY_SEPARATOR) + 1)
+                )
+            );
+
+            // Clear the file specific changes of the template
+            $this->template->clearTemplate();
 
             // Save the processed (or not) content to a file.
             // Recreate the path the file originally had
             $fileUtil->fileForceContents($pathPrefix . $targetFile, $content);
         }
-
-        // Now let's generate the navigation
-        $this->generateNavigation($pathPrefix . $pathModifier, $pathPrefix);
     }
 
     /**
@@ -200,7 +229,11 @@ class Compiler
         $fileUtil = new File();
         $fileUtil->fileForceContents(
             $targetPath . $this->config->getValue(Config::NAVIGATION_FILE_NAME) . '.html',
-            '<ul id="navigation">' . $this->generateRecursiveList(new \DirectoryIterator($srcPath), '') . '</ul>'
+            '<nav id="mp-menu" class="mp-menu">' .
+            '<div id="' . $this->config->getValue(Config::NAVIGATION_FILE_NAME) .'" class="mp-level">
+                <h2>' . $this->config->getValue(Config::PROJECT_NAME) . '</h2>
+                <ul>' . $this->generateRecursiveList(new \DirectoryIterator($srcPath), '') . '</ul>
+            </div></nav>'
         );
     }
 
@@ -214,11 +247,17 @@ class Compiler
      */
     protected function generateRecursiveList(\DirectoryIterator $dir, $nodePath)
     {
+        // We will need a flipped file mapping as we work from the tmp dir
+        $fileMapping = array_flip($this->config->getValue(Config::FILE_MAPPING));
+        $mappedIndexFile = $fileMapping['index.html'];
+
         $out = '';
+        $fileUtil = new File();
+        $parsedownUtil = new Parsedown();
         foreach ($dir as $node) {
 
             // Create the link path
-            $linkPath = $this->config->getValue(Config::NAVIGATION_BASE) . $nodePath . $node;
+            $linkPath = str_replace('.md', '.html', $this->config->getValue(Config::NAVIGATION_BASE) . $nodePath . $node);
 
             // If we got a directory we have to go deeper. If not we can add another link
             if ($node->isDir() && !$node->isDot()) {
@@ -227,19 +266,26 @@ class Compiler
                 $nodePath .= $node . DIRECTORY_SEPARATOR;
 
                 // If the directory contains an index file we will link it to the dir
-                if (isset(array_flip(scandir($node->getRealPath()))['index.html'])) {
+                if (isset(array_flip(scandir($node->getRealPath()))[$mappedIndexFile])) {
 
-                    $nodeName = '<a href="' . $linkPath . DIRECTORY_SEPARATOR . 'index.html">' . $node . '</a>';
+                    // In this case we have to include a link instead of a node name
+                    $nodeName = '<a href="{navigation-base}' . $linkPath . DIRECTORY_SEPARATOR .
+                        'index.html">' . $fileUtil->filenameToHeading($node) . '</a>';
 
                 } else {
 
-                    $nodeName = $node;
+                    // Node name is just a beautified name
+                    $nodeName = $fileUtil->filenameToHeading($node);
                 }
 
                 // Make a recursion with the new path
-                $out .= '<li node="' . $node . '">' . $nodeName . '<ul>' .
+                $out .= '<li  class="icon-thin-arrow-left" node="' . $node . '">' . $nodeName . '
+                    <div class="mp-level">
+                        <h2>' . $fileUtil->filenameToHeading($node) . '</h2>
+                        <a class="mp-back" href="#">back</a>
+                        <ul>' .
                     $this->generateRecursiveList(new \DirectoryIterator($node->getPathname()), $nodePath) .
-                    '</ul></li>';
+                    '</ul></div></li>';
 
                 // Clean the last path segment as we do need it within this loop
                 $nodePath = str_replace($node . DIRECTORY_SEPARATOR, '', $nodePath);
@@ -248,19 +294,63 @@ class Compiler
                 // A file is always a leaf, so it cannot be an ul element
 
                 // We will skip index files as actual leaves
-                if ($node == 'index.html') {
+                if ($node == $mappedIndexFile) {
 
                     continue;
                 }
 
+                // Get the node's name (in a heading format)
+                $nodeName = $fileUtil->filenameToHeading($node);
+
+                // Do we have an markdown file? If so we will check for any markdown headings
+                $headingBlock = '';
+                if (isset($this->allowedExtensions[$node->getExtension()])) {
+
+                    // We need the headings within the file
+                    $headings = $parsedownUtil->getHeadings(
+                        file_get_contents($dir->getPathname()),
+                        $this->config->getValue(Config::NAVIGATION_HEADINGS_LEVEL)
+                    );
+
+                    // Create the list of headings as a ul/li list
+                    $headingBlock = $this->generateHeadingBlock($headings, $nodeName);
+                }
+
                 // Create the actual leaf
-                $out .= '<li node="' . strstr($node, ".", true) . '"><a href="' .
-                    $linkPath . '">' .
-                    strstr($node, ".", true) . '</a></li>';
+                $out .= '<li node="' . strstr($node, ".", true) . '"><a href="{navigation-base}' .
+                    $linkPath . '">' . $nodeName . '</a>' .
+                    $headingBlock . '</li>';
             }
         }
 
+        // Return the menu
         return $out;
+    }
+
+    /**
+     * Will generate an html list for given headings
+     *
+     * @param array  $headings Headings to add to the block
+     * @param string $nodeName Name of the node as a block heading
+     *
+     * @return string
+     */
+    protected function generateHeadingBlock(array $headings, $nodeName)
+    {
+        // We need a file util to create URL ready anchors
+        $fileUtil = new File();
+
+        // Iterate over the headings and build up a li list
+        $html = '<div class="mp-level">
+                        <h2>' . $nodeName . '</h2>
+                        <ul>';
+        foreach ($headings as $heading) {
+
+            $html .= '<li class="heading"><a href="#' . $fileUtil->headingToFilename($heading) .
+                '">' . $heading . '</a></li>';
+        }
+
+        return $html . '</ul></div>';
     }
 
     /**

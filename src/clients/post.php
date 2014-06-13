@@ -30,7 +30,7 @@ $post = new TechDivision\Markman\Clients\Post();
 try {
 
     // Try to generate a configuration from the request and set it to markman
-    $post->setConfigFromArgs($_POST);
+    $post->setConfigFromArgs(file_get_contents('php://input'));
 
 } catch (Exception $e) {
 

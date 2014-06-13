@@ -64,13 +64,11 @@ class File
     /**
      * Will recursively copy a directory path
      *
-     * @param string  $src        Source path to copy
-     * @param string  $dst        Destination path to copy to
-     * @param boolean $forceWrite If true we will use fileForceContents() to even without existing directories
-     *
+     * @param string  $src Source path to copy
+     * @param string  $dst Destination path to copy to
      * @return bool
      */
-    public function recursiveCopy($src, $dst, $forceWrite = false)
+    public function recursiveCopy($src, $dst)
     {
         // If source is not a directory stop processing
         if (!is_dir($src)) {
@@ -100,5 +98,100 @@ class File
                 }
             }
         }
+    }
+
+    /**
+     * Will delete a directory with all its content
+     *
+     * @param string $dir Directory to delete
+     *
+     * @return void
+     */
+    public function recursiveDirectoryDelete($dir)
+    {
+        // Get the iterators needed to grab all files within the target directory
+        $iterator = new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS);
+        $files = new \RecursiveIteratorIterator($iterator, \RecursiveIteratorIterator::CHILD_FIRST);
+
+        // Iterator over all child nodes and delete them all
+        foreach($files as $file) {
+
+            // Do not delete the meta-nodes "." and ".."
+            if ($file->getFilename() === '.' || $file->getFilename() === '..') {
+
+                continue;
+            }
+
+            // If we got a directory remove it, if we got a file unlink it
+            if ($file->isDir()){
+
+                // Remove the directory
+                rmdir($file->getRealPath());
+
+            } else {
+
+                // Unlink the file
+                unlink($file->getRealPath());
+            }
+        }
+
+        // Finally remove the actual directory
+        rmdir($dir);
+    }
+
+    /**
+     * Will produce a relative path which will reverse existing path depth.
+     * Example: /path/to/target => ../../../
+     *
+     * @param string $path The path to be reversed
+     *
+     * @return string
+     */
+    public function generateReversePath($path)
+    {
+        // Split up the path
+        $parts = explode(DIRECTORY_SEPARATOR, $path);
+
+        // Iterate count($parts)-times and create up a string
+        $reversePath = '';
+        for ($i = 0; $i < count($parts); $i++) {
+
+            $reversePath .= '..' . DIRECTORY_SEPARATOR;
+        }
+
+        // Return what we got
+        return $reversePath;
+    }
+
+    /**
+     * Will reformat the name of a file to a heading
+     *
+     * @param string $filename Name of a file (best would be without extension)
+     *
+     * @return string
+     */
+    public function filenameToHeading($filename)
+    {
+        // Scrap the file extension if there is one
+        if (strpos($filename, '.') !== false) {
+
+            $filename = strstr($filename, '.', true);
+        }
+
+        // Return ucfirst-ed heading
+        return ucfirst(str_replace(array('-', '_'), array(' ', '.'), $filename));
+    }
+
+    /**
+     * Will convert a heading into a filename (without extension)
+     *
+     * @param string $heading Heading to be converted
+     *
+     * @return string
+     */
+    public function headingToFilename($heading)
+    {
+        // Return all low filename
+        return strtolower(str_replace(array(' ', '.'), array('-', '_'), $heading));
     }
 }

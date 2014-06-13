@@ -50,7 +50,7 @@ class Post extends AbstractClient
     public function setConfigFromArgs($args)
     {
         // If we do not get GitHub JSON we will fail
-        if (!isset($args['data']) || ($data = json_decode($args['data'])) === null ||
+        if (!isset($args) || ($data = json_decode($args)) === null ||
             !isset($data->repository) || !isset($data->repository->full_name)) {
 
             throw new \Exception('Did not get any useful data within this POST request');
