@@ -152,7 +152,7 @@ class File
      *
      * @return string
      */
-    public function HeadingToFilename($heading)
+    public function headingToFilename($heading)
     {
         // Return all low filename
         return strtolower(str_replace(array(' ', '.'), array('-', '_'), $heading));
