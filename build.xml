@@ -20,6 +20,14 @@
 	</target>
 
     <!-- ==================================================================== -->
+    <!-- Cleans the directories with the generated LIVE documentation file.   -->
+    <!--                        !!! USE WITH CAUTION !!!                      -->
+    <!-- ==================================================================== -->
+    <target name="clean-docs" description="Cleans almost everything out of the docs deploy dir, so use carefully.">
+        <delete dir="${docs.deploy.dir}" includeemptydirs="true" quiet="false" verbose="true" failonerror="true"/>
+    </target>
+
+    <!-- ==================================================================== -->
     <!-- Copies the sources to the target directory                           -->
     <!-- ==================================================================== -->
     <target name="copy" depends="clean" description="Copies the sources to the target directory.">
@@ -51,12 +59,26 @@
 	</target>
 
     <!-- ==================================================================== -->
-    <!-- Generates the API documentation                                      -->
+    <!-- Copies the docs to their specific deploy directory.     			  -->
     <!-- ==================================================================== -->
-    <target name="apidoc" description="Generates the API documentation.">
-         <exec executable="${pear.bin.dir}/phpdoc">
-            <arg line="-ct type -ue on -s on -t ${php-target.dir}/docs -o HTML:frames:earthli -d ${php-src.dir}"/>
-         </exec>
+    <target name="deploy-docs" depends="clean-docs" description="Copies the docs to their specific deploy directory.">
+
+        <copy todir="${docs.deploy.dir}" preservelastmodified="true" overwrite="true">
+            <fileset dir="${docs.build.dir}">
+                <include name="**/**"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <!-- ==================================================================== -->
+    <!-- Creates the documentation.                              			  -->
+    <!-- ==================================================================== -->
+    <target name="create-docs" description="Creates the docs.">
+
+        <!-- use the cli interface -->
+        <exec dir="${php-target.dir}/clients" executable="php">
+            <arg line="cli -n${docs.config.project-name} -s${docs.config.loader-handler} -c${docs.config.handler-string}"/>
+        </exec>
     </target>
 
     <!-- ==================================================================== -->
@@ -128,28 +150,4 @@
         	<arg line="--configuration phpunit.xml.dist" />
         </exec>
     </target>
-
-    <!-- ==================================================================== -->
-    <!-- Runs the PHPUnit tests and generates a report                        -->
-    <!-- ==================================================================== -->
-    <target name="run-tests-in-runtime" depends="copy-tests" description="Runs the PHPUnit tests and generates a report.">
-        <exec executable="${instance.base.dir}/bin/php" dir="${php-target.dir}/${unique.name}/src" failonerror="true">
-        	<arg line="-d zend_extension=xdebug.so ${instance.base.dir}/app/code/vendor/bin/phpunit --configuration phpunit.xml.dist" />
-        </exec>
-    </target>
-
-	<!-- ==================================================================== -->
-	<!-- Runs the PHPUnit tests and generates a report						  -->
-	<!-- ==================================================================== -->
-	<target name="build" description="Runs the PHPUnit tests and generates a report.">
-        <antcall target="phpcs"/>
-        <antcall target="run-tests"/>
-        <!--
-        <antcall target="apidoc"/>
-        <antcall target="phpcpd"/>
-        <antcall target="phploc"/>
-        <antcall target="pdepend"/>
-        <antcall target="phpmd"/>
-        -->
-	</target>
 </project>
