@@ -35,7 +35,9 @@ $(document).ready(function () {
         autoLinkClass: 'toplink',
         autoLinkText: 'return to Top',
         autoLinkIcon: 'fa fa-caret-square-o-up fa-4',
-        min: 200
+        min: 200,
+        easingType: 'linear',
+        scrollSpeed: 1
     });
 });
 
