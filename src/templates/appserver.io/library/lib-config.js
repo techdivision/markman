@@ -15,6 +15,7 @@ $(document).ready(function () {
         containersToPush: [$('#pushobj')],
         menuWidth: '300px',
         menuHeight: '100%',
+        mode: 'cover',
         collapsed: true,
         onGroupItemClick: function () {
             var event = arguments[0],
@@ -22,8 +23,6 @@ $(document).ready(function () {
                 $item = arguments[2],
                 options = arguments[3],
                 itemhref = $item.find('a:first').attr("href");
-             /** @todo can be remove if working the navigation*/
-
             $('#documentation').load(itemhref + ' #documentation');
         }
     });
