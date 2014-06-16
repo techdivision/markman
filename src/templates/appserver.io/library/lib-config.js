@@ -2,9 +2,8 @@
  *
  * JavaScript Library Configuration
  *
- * @category  Appserver
+ * @category  Tools
  * @package   TechDivision_Markman
- *
  * @author    Lars Roettig <l.roettig@techdsivision.com>
  * @copyright 2014 TechDivision GmbH - <info@techdivision.com>
  * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)

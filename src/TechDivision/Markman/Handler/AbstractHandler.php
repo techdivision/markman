@@ -8,7 +8,7 @@
  *
  * PHP version 5
  *
- * @category   Appserver
+ * @category   Tools
  * @package    TechDivision_Markman
  * @subpackage Handler
  * @author     Bernhard Wick <b.wick@techdivision.com>
@@ -26,7 +26,7 @@ use TechDivision\Markman\Interfaces\HandlerInterface;
  *
  * Abstract implementation of a handler which other handlers can inherit from
  *
- * @category   Appserver
+ * @category   Tools
  * @package    TechDivision_Markman
  * @subpackage Handler
  * @author     Bernhard Wick <b.wick@techdivision.com>

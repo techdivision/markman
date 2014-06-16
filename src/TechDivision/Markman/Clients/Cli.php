@@ -9,8 +9,8 @@
  * PHP version 5
  *
  * @category   Tools
- * @package    TechDivision
- * @subpackage Markman
+ * @package    TechDivision_Markman
+ * @subpackage Clients
  * @author     Bernhard Wick <b.wick@techdivision.com>
  * @copyright  2014 TechDivision GmbH - <info@techdivision.com>
  * @license    http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
@@ -27,8 +27,8 @@ use TechDivision\Markman\Config;
  * Class to provide a simple command line interface
  *
  * @category   Tools
- * @package    TechDivision
- * @subpackage Markman
+ * @package    TechDivision_Markman
+ * @subpackage Clients
  * @author     Bernhard Wick <b.wick@techdivision.com>
  * @copyright  2014 TechDivision GmbH - <info@techdivision.com>
  * @license    http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)

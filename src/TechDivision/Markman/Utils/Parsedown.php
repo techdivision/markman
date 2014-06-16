@@ -8,7 +8,7 @@
  *
  * PHP version 5
  *
- * @category   Appserver
+ * @category   Tools
  * @package    TechDivision_Markman
  * @subpackage Utils
  * @author     Bernhard Wick <b.wick@techdivision.com>
@@ -24,7 +24,7 @@ namespace TechDivision\Markman\Utils;
  *
  * Will allow to separately use Parsedown as a parser, not a compiler
  *
- * @category   Appserver
+ * @category   Tools
  * @package    TechDivision_Markman
  * @subpackage Utils
  * @author     Bernhard Wick <b.wick@techdivision.com>

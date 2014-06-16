@@ -8,7 +8,7 @@
  *
  * PHP version 5
  *
- * @category   Appserver
+ * @category   Tools
  * @package    TechDivision_Markman
  * @subpackage Handler
  * @author     Bernhard Wick <b.wick@techdivision.com>
@@ -28,7 +28,7 @@ use TechDivision\Markman\Entities\Version;
  *
  * Handler for the Github API.
  *
- * @category   Appserver
+ * @category   Tools
  * @package    TechDivision_Markman
  * @subpackage Handler
  * @author     Bernhard Wick <b.wick@techdivision.com>

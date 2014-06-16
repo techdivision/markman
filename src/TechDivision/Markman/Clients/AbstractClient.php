@@ -8,7 +8,7 @@
  *
  * PHP version 5
  *
- * @category   Appserver
+ * @category   Tools
  * @package    TechDivision_Markman
  * @subpackage Clients
  * @author     Bernhard Wick <b.wick@techdivision.com>
@@ -30,7 +30,7 @@ use TechDivision\Markman\Utils\File;
  *
  * Provides an abstract base class all clients can use
  *
- * @category   Appserver
+ * @category   Tools
  * @package    TechDivision_Markman
  * @subpackage Clients
  * @author     Bernhard Wick <b.wick@techdivision.com>

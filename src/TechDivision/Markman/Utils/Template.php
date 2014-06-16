@@ -8,7 +8,7 @@
  *
  * PHP version 5
  *
- * @category   Appserver
+ * @category   Tools
  * @package    TechDivision_Markman
  * @subpackage Utils
  * @author     Lars Roettig <l.roettig@techdsivision.com>
@@ -27,7 +27,7 @@ use TechDivision\Markman\Config;
  *
  * File utility which provides additional file operation methods.
  *
- * @category   Appserver
+ * @category   Tools
  * @package    TechDivision_Markman
  * @subpackage Utils
  * @author     Lars Roettig <l.roettig@techdsivision.com>

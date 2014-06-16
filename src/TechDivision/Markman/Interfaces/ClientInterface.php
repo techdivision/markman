@@ -8,7 +8,7 @@
  *
  * PHP version 5
  *
- * @category   Appserver
+ * @category   Tools
  * @package    TechDivision_Markman
  * @subpackage Interfaces
  * @author     Bernhard Wick <b.wick@techdivision.com>
@@ -24,7 +24,7 @@ namespace TechDivision\Markman\Interfaces;
  *
  * Interface describing
  *
- * @category   Appserver
+ * @category   Tools
  * @package    TechDivision_Markman
  * @subpackage Interfaces
  * @author     Bernhard Wick <b.wick@techdivision.com>

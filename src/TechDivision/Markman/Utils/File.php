@@ -8,7 +8,7 @@
  *
  * PHP version 5
  *
- * @category   Appserver
+ * @category   Tools
  * @package    TechDivision_Markman
  * @subpackage Utils
  * @author     Bernhard Wick <b.wick@techdivision.com>
@@ -24,7 +24,7 @@ namespace TechDivision\Markman\Utils;
  *
  * File utility which provides additional file operation methods.
  *
- * @category   Appserver
+ * @category   Tools
  * @package    TechDivision_Markman
  * @subpackage Utils
  * @author     Bernhard Wick <b.wick@techdivision.com>

@@ -8,13 +8,12 @@
  *
  * PHP version 5
  *
- * @category   Appserver
- * @package    TechDivision
- * @subpackage Markman
- * @author     Bernhard Wick <b.wick@techdivision.com>
- * @copyright  2014 TechDivision GmbH - <info@techdivision.com>
- * @license    http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
- * @link       http://www.techdivision.com/
+ * @category  Tools
+ * @package   TechDivision_Markman
+ * @author    Bernhard Wick <b.wick@techdivision.com>
+ * @copyright 2014 TechDivision GmbH - <info@techdivision.com>
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * @link      http://www.techdivision.com/
  */
 
 namespace TechDivision\Markman;
@@ -24,13 +23,12 @@ namespace TechDivision\Markman;
  *
  * Class containing the configuration for the markman library. Might be filled from wherever.
  *
- * @category   Appserver
- * @package    TechDivision
- * @subpackage Markman
- * @author     Bernhard Wick <b.wick@techdivision.com>
- * @copyright  2014 TechDivision GmbH - <info@techdivision.com>
- * @license    http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
- * @link       http://www.techdivision.com/
+ * @category  Tools
+ * @package   TechDivision_Markman
+ * @author    Bernhard Wick <b.wick@techdivision.com>
+ * @copyright 2014 TechDivision GmbH - <info@techdivision.com>
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * @link      http://www.techdivision.com/
  */
 class Config
 {
