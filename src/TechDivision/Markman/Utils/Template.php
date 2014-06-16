@@ -76,7 +76,7 @@ class Template
      *
      * @const string DEFAULT_CONFIG_FILE
      */
-    const DEFAULT_TEMPLATE_NAME = 'default';
+    const DEFAULT_TEMPLATE_NAME = 'appserver.io';
 
     /**
      * Default constructor
