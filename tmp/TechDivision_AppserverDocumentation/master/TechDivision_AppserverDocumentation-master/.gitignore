@@ -1,9 +1,0 @@
-/target
-/.idea
-/instance-src
-/.buildpath
-/.project
-/.settings
-/build.properties
-# the apple directory description
-.DS_Store

@@ -58,16 +58,6 @@
 		</copy>
 	</target>
 
-    <target name="deploy-simple" depends="copy" description="Copies the sources to the deploy directory.">
-        <echo message="copy sources to ${deploy.dir} ..."/>
-        <copy todir="${deploy.dir}" preservelastmodified="true" overwrite="true">
-            <fileset dir="${php-target.dir}">
-                <include name="**/*"/>
-            </fileset>
-        </copy>
-    </target>
-
-
     <!-- ==================================================================== -->
     <!-- Copies the docs to their specific deploy directory.     			  -->
     <!-- ==================================================================== -->
