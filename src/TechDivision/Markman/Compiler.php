@@ -212,10 +212,10 @@ class Compiler
     public function compileVersionSwitch(array $versions, $currentVersion)
     {
         // Build up the html
-        $html = '<ul role="navigation" class="nav">
+        $html = '<ul role="navigation" class="nav sf-menu">
         <li class="dropdown sf-with-ul"><a href="#" data-toggle="dropdown" class="dropdown-toggle sf-with-ul">Versions
         <span class="sf-sub-indicator">
-                <i class="icon-thin-arrow- "></i>
+                <i class="icon-thin-arrow-down"></i>
             </span></a>
         <ul id="' . $this->config->getValue(Config::VERSION_SWITCHER_FILE_NAME) . '" class="dropdown-menu">';
         foreach ($versions as $version) {

@@ -63,6 +63,7 @@ class Config
     const VERSION_SWITCHER_FILE_NAME = 'VERSION_SWITCHER_FILE_NAME';
     const NAVIGATION_BASE = 'NAVIGATION_BASE';
     const PROJECT_NAME = 'PROJECT_NAME';
+    const PROJECT_SITE = 'PROJECT_SITE';
     const FILE_MAPPING = 'FILE_MAPPING';
     const LOADER_HANDLER = 'LOADER_HANDLER';
     const HANDLER_STRING = 'HANDLER_STRING';
@@ -114,6 +115,9 @@ class Config
 
         // The time in between different compile cycles in minutes. Set as a precaution
         $this->setValue(self::MIN_TIME_INTERVAL, 5);
+
+        // Per default the project site will be google
+        $this->setValue(self::PROJECT_SITE, 'google.com');
     }
 
     /**
