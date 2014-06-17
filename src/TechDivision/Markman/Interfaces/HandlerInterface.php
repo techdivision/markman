@@ -8,7 +8,7 @@
  *
  * PHP version 5
  *
- * @category   Appserver
+ * @category   Tools
  * @package    TechDivision_Markman
  * @subpackage Interfaces
  * @author     Bernhard Wick <b.wick@techdivision.com>
@@ -26,7 +26,7 @@ use TechDivision\Markman\Entities\Version;
  *
  * Provides an interface all handler classes have to implement
  *
- * @category   Appserver
+ * @category   Tools
  * @package    TechDivision_Markman
  * @subpackage Interfaces
  * @author     Bernhard Wick <b.wick@techdivision.com>

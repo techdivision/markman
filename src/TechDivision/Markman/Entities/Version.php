@@ -8,7 +8,7 @@
  *
  * PHP version 5
  *
- * @category   Appserver
+ * @category   Tools
  * @package    TechDivision_Markman
  * @subpackage Entities
  * @author     Bernhard Wick <b.wick@techdivision.com>
@@ -24,7 +24,7 @@ namespace TechDivision\Markman\Entities;
  *
  * Entity representing an immutable documentation version object
  *
- * @category   Appserver
+ * @category   Tools
  * @package    TechDivision_Markman
  * @subpackage Entities
  * @author     Bernhard Wick <b.wick@techdivision.com>

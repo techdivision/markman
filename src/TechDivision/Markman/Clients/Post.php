@@ -8,7 +8,7 @@
  *
  * PHP version 5
  *
- * @category   Appserver
+ * @category   Tools
  * @package    TechDivision_Markman
  * @subpackage Clients
  * @author     Bernhard Wick <b.wick@techdivision.com>
@@ -26,7 +26,7 @@ use TechDivision\Markman\Config;
  *
  * Offers a client to invoke markman compilation by POST requests
  *
- * @category   Appserver
+ * @category   Tools
  * @package    TechDivision_Markman
  * @subpackage Clients
  * @author     Bernhard Wick <b.wick@techdivision.com>

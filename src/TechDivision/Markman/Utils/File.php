@@ -8,7 +8,7 @@
  *
  * PHP version 5
  *
- * @category   Appserver
+ * @category   Tools
  * @package    TechDivision_Markman
  * @subpackage Utils
  * @author     Bernhard Wick <b.wick@techdivision.com>
@@ -24,7 +24,7 @@ namespace TechDivision\Markman\Utils;
  *
  * File utility which provides additional file operation methods.
  *
- * @category   Appserver
+ * @category   Tools
  * @package    TechDivision_Markman
  * @subpackage Utils
  * @author     Bernhard Wick <b.wick@techdivision.com>
@@ -143,18 +143,19 @@ class File
      * Will produce a relative path which will reverse existing path depth.
      * Example: /path/to/target => ../../../
      *
-     * @param string $path The path to be reversed
+     * @param string  $path   The path to be reversed
+     * @param integer $offset Allows for shortened reverse paths
      *
      * @return string
      */
-    public function generateReversePath($path)
+    public function generateReversePath($path, $offset = 0)
     {
         // Split up the path
         $parts = explode(DIRECTORY_SEPARATOR, $path);
 
         // Iterate count($parts)-times and create up a string
         $reversePath = '';
-        for ($i = 0; $i < count($parts); $i++) {
+        for ($i = 0; $i < count($parts) - $offset; $i++) {
 
             $reversePath .= '..' . DIRECTORY_SEPARATOR;
         }

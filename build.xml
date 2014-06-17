@@ -35,6 +35,9 @@
             <fileset dir="${php-src.dir}">
                 <include name="**/*" />
             </fileset>
+            <filterchain>
+                <expandproperties/>
+            </filterchain>
         </copy>
         <!-- copy the composer configuration file to the target directory -->
         <copy file="${basedir}/composer.json" todir="${php-target.dir}" />

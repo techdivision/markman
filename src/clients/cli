@@ -11,13 +11,12 @@
  * This file is used to invoke and control markman using a command line interface.
  * This file makes use of the \TechDivision\Markman\Clients\Cli class internally.
  *
- * @category   Tools
- * @package    TechDivision
- * @subpackage Markman
- * @author     Bernhard Wick <b.wick@techdivision.com>
- * @copyright  2014 TechDivision GmbH - <info@techdivision.com>
- * @license    http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
- * @link       http://www.techdivision.com/
+ * @category  Tools
+ * @package   TechDivision_Markman
+ * @author    Bernhard Wick <b.wick@techdivision.com>
+ * @copyright 2014 TechDivision GmbH - <info@techdivision.com>
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * @link      http://www.techdivision.com/
  */
 
 // Let's get our autoloader

@@ -8,13 +8,12 @@
  *
  * PHP version 5
  *
- * @category   Appserver
- * @package    TechDivision
- * @subpackage Markman
- * @author     Bernhard Wick <b.wick@techdivision.com>
- * @copyright  2014 TechDivision GmbH - <info@techdivision.com>
- * @license    http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
- * @link       http://www.techdivision.com/
+ * @category  Tools
+ * @package   TechDivision_Markman
+ * @author    Bernhard Wick <b.wick@techdivision.com>
+ * @copyright 2014 TechDivision GmbH - <info@techdivision.com>
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * @link      http://www.techdivision.com/
  */
 
 namespace TechDivision\Markman;
@@ -24,13 +23,12 @@ namespace TechDivision\Markman;
  *
  * Class containing the configuration for the markman library. Might be filled from wherever.
  *
- * @category   Appserver
- * @package    TechDivision
- * @subpackage Markman
- * @author     Bernhard Wick <b.wick@techdivision.com>
- * @copyright  2014 TechDivision GmbH - <info@techdivision.com>
- * @license    http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
- * @link       http://www.techdivision.com/
+ * @category  Tools
+ * @package   TechDivision_Markman
+ * @author    Bernhard Wick <b.wick@techdivision.com>
+ * @copyright 2014 TechDivision GmbH - <info@techdivision.com>
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * @link      http://www.techdivision.com/
  */
 class Config
 {
@@ -65,6 +63,7 @@ class Config
     const VERSION_SWITCHER_FILE_NAME = 'VERSION_SWITCHER_FILE_NAME';
     const NAVIGATION_BASE = 'NAVIGATION_BASE';
     const PROJECT_NAME = 'PROJECT_NAME';
+    const PROJECT_SITE = 'PROJECT_SITE';
     const FILE_MAPPING = 'FILE_MAPPING';
     const LOADER_HANDLER = 'LOADER_HANDLER';
     const HANDLER_STRING = 'HANDLER_STRING';
@@ -72,6 +71,7 @@ class Config
     const MIN_TIME_INTERVAL = 'MIN_TIME_INTERVAL';
     const PATH_MODIFIER = 'PATH_MODIFIER';
     const NAVIGATION_HEADINGS_LEVEL = 'NAVIGATION_HEADINGS_LEVEL';
+    const INDEX_FILE_NAME = 'INDEX_FILE_NAME';
 
     /**
      * Default constructor.
@@ -109,11 +109,15 @@ class Config
         $this->setValue(self::VERSION_SWITCHER_FILE_NAME, 'versions');
         $this->setValue(self::NAVIGATION_FILE_NAME, 'navigation');
 
-        // Also essential, a base path for the navigation
+        // Also essential, a base path for the navigation and the name of the index file
         $this->setValue(self::NAVIGATION_BASE, '');
+        $this->setValue(self::INDEX_FILE_NAME, 'index.html');
 
         // The time in between different compile cycles in minutes. Set as a precaution
         $this->setValue(self::MIN_TIME_INTERVAL, 5);
+
+        // Per default the project site will be google
+        $this->setValue(self::PROJECT_SITE, 'google.com');
     }
 
     /**
