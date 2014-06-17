@@ -41,11 +41,38 @@ $(document).ready(function () {
                 $(this).attr("href", "/" + "docs" + "/" + projectName + "/" + $(this).text().trim() + versionLessLink);
             });
 
+            $('html, body').animate({ scrollTop: 0 }, 0);
+
             // Change the URL of the browser
             window.history.pushState("string", "Title", absoluteLink);
         },
         onBackItemClick: function () {
+            // scroll top
+            $('html, body').animate({scrollTop: 0}, 0);
+            // fetch the current and spilt in array
+            var hrefArray = $(location).attr('href').split("/");
+            // the elements count
+            var count = hrefArray.length;
+            // the new absoluteLink
+            var absoluteLink = hrefArray[0] + "//";
 
+            // short the new url about 2 url hierarchy
+            for (var i = 2; i < (count - 2); i++) {
+                absoluteLink += hrefArray[i] + "/";
+            }
+
+            var versionLessLink = absoluteLink.split('/')[1];
+
+            // Load the requested documentation content
+            $('#documentation').load(absoluteLink + ' #documentation');
+
+            // Change the links of the version switcher
+            $('li', '#versions').find('a').each(function () {
+                $(this).attr("href", "/" + "docs" + "/" + projectName + "/" + $(this).text().trim() + versionLessLink);
+            });
+
+            // Change the URL of the browser
+            window.history.pushState("string", "Title", absoluteLink);
         }
     });
     menu.multilevelpushmenu('option', 'menuHeight', $(document).height());

@@ -41,6 +41,7 @@ a.toplink:hover {
 
 .fa-reorder {
     color: #30d5f5;
+    padding-top: 5px;
 }
 
 .dropdown-toggle {
@@ -48,6 +49,11 @@ a.toplink:hover {
 }
 
 .dropdown-toggle:hover {
+    background-color: #252c34;
+    border-bottom: 3px solid #30d5f5;
+}
+
+.nav .open > a:focus {
     background-color: #252c34;
     border-bottom: 3px solid #30d5f5;
 }
@@ -75,4 +81,27 @@ a.dropdown-toggle:hover {
 
 .multilevelpushmenu_wrapper li:hover {
     background-color: #252c34;
+}
+
+.nav > li > a:hover, .nav > li > a:focus {
+    text-decoration: none;
+    background-color: #252c34;
+    color: #ffffff;
+}
+
+.navbar-default .dropdown-menu > .active > a {
+    background-color: #004b63;
+}
+
+.nav .open > a:focus {
+    background-color: #252c34;
+}
+
+.navbar-default .dropdown-menu > li > a:hover, .navbar-default .dropdown-menu > .active > a:hover {
+    background-color: #252c34;
+}
+
+#menu_multilevelpushmenu {
+    position: fixed;
+    top: 45px;
 }
