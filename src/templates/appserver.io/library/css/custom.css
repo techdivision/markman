@@ -1,0 +1,78 @@
+body {
+    padding-top: 45px;
+}
+
+#pushobj {
+    margin-left: 40px;
+}
+
+#header {
+    background-color: #212121;
+}
+
+.container {
+
+    margin-right: 0;
+    margin-left: 0;
+}
+
+#documentation {
+    height: 100%;
+    overflow: auto;
+}
+
+#toTop-right {
+    display: none;
+    text-decoration: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    outline: none;
+}
+
+a.toplink {
+    font-size: 14px;
+    color: #666;
+}
+
+a.toplink:hover {
+    color: #333;
+}
+
+.fa-reorder {
+    color: #30d5f5;
+}
+
+.dropdown-toggle {
+    height: 100%;
+}
+
+.dropdown-toggle:hover {
+    background-color: #252c34;
+    border-bottom: 3px solid #30d5f5;
+}
+
+a.dropdown-toggle:hover {
+    background-color: #2f3843;
+}
+
+.nav {
+    border-radius: 0 0 3px 3px;
+}
+
+.multilevelpushmenu_wrapper a {
+    font-size: 1.4em;
+    display: list-item;
+}
+
+.multilevelpushmenu_wrapper .levelHolderClass {
+    background: #212121;
+}
+
+.multilevelpushmenu_wrapper .multilevelpushmenu_inactive {
+    background: #212121;
+}
+
+.multilevelpushmenu_wrapper li:hover {
+    background-color: #252c34;
+}

@@ -70,6 +70,7 @@ class Config
     const MIN_TIME_INTERVAL = 'MIN_TIME_INTERVAL';
     const PATH_MODIFIER = 'PATH_MODIFIER';
     const NAVIGATION_HEADINGS_LEVEL = 'NAVIGATION_HEADINGS_LEVEL';
+    const INDEX_FILE_NAME = 'INDEX_FILE_NAME';
 
     /**
      * Default constructor.
@@ -107,8 +108,9 @@ class Config
         $this->setValue(self::VERSION_SWITCHER_FILE_NAME, 'versions');
         $this->setValue(self::NAVIGATION_FILE_NAME, 'navigation');
 
-        // Also essential, a base path for the navigation
+        // Also essential, a base path for the navigation and the name of the index file
         $this->setValue(self::NAVIGATION_BASE, '');
+        $this->setValue(self::INDEX_FILE_NAME, 'index.html');
 
         // The time in between different compile cycles in minutes. Set as a precaution
         $this->setValue(self::MIN_TIME_INTERVAL, 5);

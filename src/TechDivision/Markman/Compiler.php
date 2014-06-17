@@ -167,8 +167,18 @@ class Compiler
                 continue;
             }
 
-            // Create the html content. We will need the reverse path of the current file here
+            // Create the html content. We will need the reverse path of the current file here.
+            // We have to differ if we are in an index file or not, if so we have to go a level
+            // deeper as the actual path.
             $reversePath = $fileUtil->generateReversePath($targetFile, 1);
+            if (ltrim(strrchr($targetFile, DIRECTORY_SEPARATOR), DIRECTORY_SEPARATOR) === $this->config->getValue(Config::INDEX_FILE_NAME)) {
+
+                $navigationBase = ltrim(strstr($reversePath, DIRECTORY_SEPARATOR), DIRECTORY_SEPARATOR) . $currentVersion . '/';
+
+            } else {
+
+                $navigationBase = $reversePath . $currentVersion . '/';
+            }
 
             // Now fill the template a last time and retrieve the complete template
             $content =  $this->template->getTemplate(
@@ -176,7 +186,7 @@ class Compiler
                     '{version-switcher-element}' => $versionSwitcherContent,
                     '{content}' => $rawContent,
                     '{relative-base-url}' => $reversePath . Template::VENDOR_DIR,
-                    '{navigation-base}' =>  $reversePath . $currentVersion . '/',
+                    '{navigation-base}' =>  $navigationBase,
                     '{version-switch-base}' => $reversePath,
                     '{version-switch-file}' => $targetFile
                 )
@@ -202,7 +212,12 @@ class Compiler
     public function compileVersionSwitch(array $versions, $currentVersion)
     {
         // Build up the html
-        $html = '<ul id="' . $this->config->getValue(Config::VERSION_SWITCHER_FILE_NAME) . '" class="nav navbar-nav navbar-right">';
+        $html = '<ul role="navigation" class="nav">
+        <li class="dropdown sf-with-ul"><a href="#" data-toggle="dropdown" class="dropdown-toggle sf-with-ul">Versions
+        <span class="sf-sub-indicator">
+                <i class="icon-thin-arrow- "></i>
+            </span></a>
+        <ul id="' . $this->config->getValue(Config::VERSION_SWITCHER_FILE_NAME) . '" class="dropdown-menu">';
         foreach ($versions as $version) {
 
             // Build up the html, but make sure to set the current version as active
@@ -215,11 +230,13 @@ class Compiler
             }
 
             // Now comes the rest of the html
-            $html .= ' node="' . $version->getName() . '"><a href="{version-switch-base}' .
-                $version->getName() . '{version-switch-file}">' . $version->getName() . '</a></li>';
+            $html .= ' style="display: none;" node="' . $version->getName() . '">
+            <a href="{version-switch-base}' .
+                $version->getName() . '{version-switch-file}" class="sf-with-ul">' . $version->getName() . '
+                </a></li>';
 
         }
-        $html .= '</ul>';
+        $html .= '</ul></li></ul>';
 
         // Write html to file
         $fileUtil = new File();
@@ -247,7 +264,7 @@ class Compiler
         $fileUtil->fileForceContents(
             $targetPath . $this->config->getValue(Config::NAVIGATION_FILE_NAME) . '.html',
             '<nav>' .
-            '<h2><i class="fa fa-reorder"></i>' . $this->config->getValue(Config::PROJECT_NAME) . '</h2>
+            '<h2><i class="fa fa-reorder floatRight cursorPointer"></i></h2>
                 <ul>' . $this->generateRecursiveList(new \DirectoryIterator($srcPath), '') . '</ul>
             </nav>'
         );
