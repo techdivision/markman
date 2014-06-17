@@ -93,11 +93,12 @@ class Compiler
      *
      * @param string $tmpFilesPath   Path to the temporary, raw, documentation
      * @param string $targetBasePath Path to write the documentation to
+     * @param string $currentVersion The version we are currently compiling for
      * @param array  $versions       Versions a documentation exists for
      *
      * @return bool
      */
-    public function compile($tmpFilesPath, $targetBasePath, $versions)
+    public function compile($tmpFilesPath, $targetBasePath, $currentVersion, $versions)
     {
         // Is there anything useful here?
         if (!is_readable($tmpFilesPath)) {
@@ -106,11 +107,11 @@ class Compiler
         }
 
         // First of all we need a version file
-        $this->compileVersionSwitch($versions);
+        $this->compileVersionSwitch($versions, $currentVersion);
 
         // Path prefix which points into the generated folder with the specific version we are compiling right now
         $pathPrefix = $this->config->getValue(Config::BUILD_PATH) . DIRECTORY_SEPARATOR .
-            $targetBasePath . DIRECTORY_SEPARATOR;
+            $targetBasePath . DIRECTORY_SEPARATOR . $currentVersion;
 
         // Now let's generate the navigation
         $this->generateNavigation($tmpFilesPath, $pathPrefix);
@@ -118,11 +119,6 @@ class Compiler
         // Added version switcher and navigation elements
         $this->template->getTemplate(
             array(
-                '{version-switcher-element}' => file_get_contents(
-                    $this->config->getValue(Config::BUILD_PATH) . DIRECTORY_SEPARATOR .
-                    $this->config->getValue(Config::PROJECT_NAME) . DIRECTORY_SEPARATOR .
-                    $this->config->getValue(Config::VERSION_SWITCHER_FILE_NAME) . '.html'
-                ),
                 '{navigation-element}' => file_get_contents(
                     $pathPrefix .
                     $this->config->getValue(Config::NAVIGATION_FILE_NAME) . '.html'
@@ -134,6 +130,13 @@ class Compiler
         // Get an iterator over the part of the directory we want
         $iterator = $this->getDirectoryIterator($tmpFilesPath);
 
+        // We do not have to read the version switcher so many times
+        $versionSwitcherContent = file_get_contents(
+        $this->config->getValue(Config::BUILD_PATH) . DIRECTORY_SEPARATOR .
+        $this->config->getValue(Config::PROJECT_NAME) . DIRECTORY_SEPARATOR .
+        $currentVersion . DIRECTORY_SEPARATOR .
+        $this->config->getValue(Config::VERSION_SWITCHER_FILE_NAME) . '.html');
+
         // Compile all the files
         $fileUtil = new File();
         foreach ($iterator as $file) {
@@ -143,6 +146,14 @@ class Compiler
 
             // Create the name of the target file relative to the containing base directory (tmp or build)
             $targetFile = str_replace($tmpFilesPath, '', $file);
+
+            // Apply any name mapping there might be
+            if (count($this->config->getValue(Config::FILE_MAPPING)) > 0) {
+
+                // Split up the mapping and apply it
+                $haystacks = array_keys($this->config->getValue(Config::FILE_MAPPING));
+                $targetFile = str_replace($haystacks, $this->config->getValue(Config::FILE_MAPPING), $targetFile);
+            }
 
             // If the file has a markdown extension we will compile it, if it is something we have to preserve we
             // will do so, if not we will skip it
@@ -156,26 +167,17 @@ class Compiler
                 continue;
             }
 
-            // Apply any name mapping there might be
-            if (count($this->config->getValue(Config::FILE_MAPPING)) > 0) {
-
-                // Split up the mapping and apply it
-                $haystacks = array_keys($this->config->getValue(Config::FILE_MAPPING));
-                $targetFile = str_replace($haystacks, $this->config->getValue(Config::FILE_MAPPING), $targetFile);
-            }
-
             // Create the html content. We will need the reverse path of the current file here
-            $reversePath = $fileUtil->generateReversePath(
-                substr($targetFile, 0, strrpos($targetFile, DIRECTORY_SEPARATOR))
-            );
-            $reversePathMinusOne = substr($reversePath, 0, strrpos($reversePath, DIRECTORY_SEPARATOR) + 1);
+            $reversePath = $fileUtil->generateReversePath($targetFile, 1);
+
             // Now fill the template a last time and retrieve the complete template
             $content =  $this->template->getTemplate(
                 array(
+                    '{version-switcher-element}' => $versionSwitcherContent,
                     '{content}' => $rawContent,
                     '{relative-base-url}' => $reversePath . Template::VENDOR_DIR,
-                    '{navigation-base}' => $reversePathMinusOne,
-                    '{version-switch-base}' => substr($reversePathMinusOne, 0, strrpos($reversePathMinusOne, DIRECTORY_SEPARATOR) + 1),
+                    '{navigation-base}' =>  $reversePath . $currentVersion . '/',
+                    '{version-switch-base}' => $reversePath,
                     '{version-switch-file}' => $targetFile
                 )
             );
@@ -192,18 +194,30 @@ class Compiler
     /**
      * Will generate a separate file containing a html list of all versions a documentation has
      *
-     * @param array $versions Array of versions
+     * @param array  $versions       Array of versions
+     * @param string $currentVersion The version we are currently compiling for
      *
      * @return void
      */
-    public function compileVersionSwitch(array $versions)
+    public function compileVersionSwitch(array $versions, $currentVersion)
     {
         // Build up the html
-        $html = '<ul id="' . $this->config->getValue(Config::VERSION_SWITCHER_FILE_NAME) . '">';
+        $html = '<ul id="' . $this->config->getValue(Config::VERSION_SWITCHER_FILE_NAME) . '" class="nav navbar-nav navbar-right">';
         foreach ($versions as $version) {
 
-            $html .= '<li node="' . $version->getName() . '"><a href="{version-switch-base}' .
+            // Build up the html, but make sure to set the current version as active
+            $html .= '<li';
+
+            // If this is the current version we have to set it as active
+            if ($version->getName() === $currentVersion) {
+
+                $html .= ' class="active"';
+            }
+
+            // Now comes the rest of the html
+            $html .= ' node="' . $version->getName() . '"><a href="{version-switch-base}' .
                 $version->getName() . '{version-switch-file}">' . $version->getName() . '</a></li>';
+
         }
         $html .= '</ul>';
 
@@ -212,6 +226,7 @@ class Compiler
         $fileUtil->fileForceContents(
             $this->config->getValue(Config::BUILD_PATH) . DIRECTORY_SEPARATOR .
             $this->config->getValue(Config::PROJECT_NAME) . DIRECTORY_SEPARATOR .
+            $currentVersion . DIRECTORY_SEPARATOR .
             $this->config->getValue(Config::VERSION_SWITCHER_FILE_NAME) . '.html',
             $html
         );
@@ -283,7 +298,6 @@ class Compiler
                 $out .= '<li  class="icon-thin-arrow-left" node="' . $node . '">' . $nodeName . '
 
                         <h2>' . $fileUtil->filenameToHeading($node) . '</h2>
-                        <a class="mp-back" href="#">back</a>
                         <ul>' .
                     $this->generateRecursiveList(new \DirectoryIterator($node->getPathname()), $nodePath) .
                     '</ul></li>';

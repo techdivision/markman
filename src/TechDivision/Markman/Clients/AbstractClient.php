@@ -114,8 +114,10 @@ abstract class AbstractClient implements ClientInterface
 
             // Collect what we need and hand it to the compiler
             $this->compiler->compile(
-                $tmpFile . DIRECTORY_SEPARATOR . $this->loader->getSystemPathModifier($version),
-                $this->config->getValue(Config::PROJECT_NAME) . DIRECTORY_SEPARATOR . $version,
+                $tmpFile . DIRECTORY_SEPARATOR . $this->loader->getSystemPathModifier($version) . DIRECTORY_SEPARATOR .
+                $this->config->getValue(Config::PATH_MODIFIER),
+                $this->config->getValue(Config::PROJECT_NAME) . DIRECTORY_SEPARATOR,
+                $version,
                 $versions
             );
         }
