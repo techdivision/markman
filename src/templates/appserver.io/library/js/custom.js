@@ -17,6 +17,12 @@ $(document).ready(function () {
     var currentUri = window.location.href.toString().split(window.location.host)[1];
     var uriPrefix = currentUri.substr(0, currentUri.indexOf(currentVersion));
 
+    // uriPrefix has to begin with a slash
+    if (uriPrefix.charAt(0) != '/') {
+
+        uriPrefix = '/' + uriPrefix;
+    }
+
     /**
      * We have to configure and initialise the multi push menu
      */
