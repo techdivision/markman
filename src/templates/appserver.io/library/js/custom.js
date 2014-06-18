@@ -30,7 +30,7 @@ $(document).ready(function () {
 
             // We need to build up several links
             var absoluteLink = "/" + "${docs.deploy.folder}" + "/" + projectName + "/" + itemHref;
-            var versionLessLink = itemHref.split('/')[1];
+            var versionLessLink = itemHref.substring(itemHref.indexOf('/'));
 
             // Load the requested documentation content
             $('#documentation').load(absoluteLink + ' #documentation');
@@ -38,16 +38,17 @@ $(document).ready(function () {
             // Change the links of the version switcher
             $('li', '#versions').find('a').each(function () {
 
-                $(this).attr("href", "/" + "docs" + "/" + projectName + "/" + $(this).text().trim() + versionLessLink);
+                $(this).attr("href", "/" + "${docs.deploy.folder}" + "/" + projectName + "/" + $(this).text().trim() + versionLessLink);
             });
 
+            // Scroll to top to show the new content
             $('html, body').animate({ scrollTop: 0 }, 0);
 
             // Change the URL of the browser
             window.history.pushState("string", "Title", absoluteLink);
         },
         onBackItemClick: function () {
-            // scroll top
+            // Scroll to top to show the new content
             $('html, body').animate({scrollTop: 0}, 0);
             // fetch the current and spilt in array
             var hrefArray = $(location).attr('href').split("/");
@@ -56,19 +57,33 @@ $(document).ready(function () {
             // the new absoluteLink
             var absoluteLink = hrefArray[0] + "//";
 
-            // short the new url about 2 url hierarchy
-            for (var i = 2; i < (count - 2); i++) {
-                absoluteLink += hrefArray[i] + "/";
+            // Shorten the new url about 2 url hierarchies if we are in an index file, if not just by one hierarchy
+            var shortenBy = 0;
+            if (hrefArray.indexOf('index.html', count - 10) !== -1) {
+
+                shortenBy = 2;
+
+            } else {
+
+                shortenBy = 1;
             }
 
-            var versionLessLink = absoluteLink.split('/')[1];
+            // Do the actual shortening
+            for (var i = 2; i < (count - shortenBy); i++) {
+                absoluteLink += hrefArray[i] + "/";
+            }
+            absoluteLink += 'index.html';
 
             // Load the requested documentation content
             $('#documentation').load(absoluteLink + ' #documentation');
 
+            // Build up the versionless link for the version switcher
+            var versionLessLink = absoluteLink.substring(absoluteLink.indexOf(projectName + '/'));
+            versionLessLink = versionLessLink.substring(versionLessLink.indexOf('/', projectName.length + 2));
+
             // Change the links of the version switcher
             $('li', '#versions').find('a').each(function () {
-                $(this).attr("href", "/" + "docs" + "/" + projectName + "/" + $(this).text().trim() + versionLessLink);
+                $(this).attr("href", "/" + "${docs.deploy.folder}" + "/" + projectName + "/" + $(this).text().trim() + versionLessLink);
             });
 
             // Change the URL of the browser

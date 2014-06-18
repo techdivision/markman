@@ -18,6 +18,7 @@
 
 namespace TechDivision\Markman;
 
+use TechDivision\Markman\Compilers\Pre\GithubPreCompiler;
 use TechDivision\Markman\Utils\File;
 use TechDivision\Markman\Utils\Parsedown;
 use TechDivision\Markman\Utils\Template;
@@ -67,6 +68,20 @@ class Compiler
     protected $config;
 
     /**
+     * A list of compiler which have to run prior to this one
+     *
+     * @var array $preCompilers
+     */
+    protected $preCompilers = array();
+
+    /**
+     * A list of compiler which have to run after this one
+     *
+     * @var array $postCompilers
+     */
+    protected $postCompilers = array();
+
+    /**
      * Default constructor
      *
      * @param \TechDivision\Markman\Config $config The project's configuration instance
@@ -83,6 +98,17 @@ class Compiler
         // Prefill the allowed and preserved extensions
         $this->allowedExtensions = array_flip(array('md', 'markdown'));
         $this->preservedExtensions = array_flip(array('png', 'jpg', 'jpeg', 'svg', 'css', 'html', 'phtml'));
+
+        // We might want to add some pre- or post-compilers to our stack, based on what kind of configuration we got
+        $this->preCompilers = array();
+        $this->postCompilers = array();
+
+        // Only thing we know right now is the Github pre-compiler
+        // @TODO add a more general compiler handling
+        if ($this->config->getValue(Config::LOADER_HANDLER) === 'github') {
+
+            $this->preCompilers = array(new GithubPreCompiler());
+        }
     }
 
     /**
@@ -122,7 +148,8 @@ class Compiler
                 '{navigation-element}' => file_get_contents(
                     $pathPrefix .
                     $this->config->getValue(Config::NAVIGATION_FILE_NAME) . '.html'
-                )
+                ),
+                '{project-site}' => $this->config->getValue(Config::PROJECT_SITE)
             ),
             true
         );
@@ -141,9 +168,6 @@ class Compiler
         $fileUtil = new File();
         foreach ($iterator as $file) {
 
-            // Get the content of the file
-            $rawContent = file_get_contents($file);
-
             // Create the name of the target file relative to the containing base directory (tmp or build)
             $targetFile = str_replace($tmpFilesPath, '', $file);
 
@@ -159,7 +183,10 @@ class Compiler
             // will do so, if not we will skip it
             if (isset($this->allowedExtensions[$file->getExtension()])) {
 
-                $rawContent = $this->compiler->text($rawContent);
+                // Do the compilation
+                $rawContent = $this->compileFile($file);
+
+                // Now change the extension for the ones not already covered by any file mapping
                 $targetFile = str_replace($file->getExtension(), 'html', $targetFile);
 
             } elseif (!isset($this->preservedExtensions[strtolower($file->getExtension())])) {
@@ -202,6 +229,37 @@ class Compiler
     }
 
     /**
+     * Will compile a certain file including any needed pre- and post-compilers
+     *
+     * @param \SplFileInfo $file The file which content has to be compiled
+     *
+     * @return string
+     */
+    protected function compileFile($file)
+    {
+        // Get the content of the file
+        $rawContent = file_get_contents($file);
+
+        // Run all the pre-compilers before doing anything
+        foreach ($this->preCompilers as $preCompiler) {
+
+            $rawContent = $preCompiler->compile($rawContent);
+        }
+
+        // Now let the actual compiler do its work
+        $rawContent = $this->compiler->text($rawContent);
+
+        // Let's also run all the post-compilers here
+        foreach ($this->postCompilers as $postCompiler) {
+
+            $rawContent = $postCompiler->compile($rawContent);
+        }
+
+        // Return what we got
+        return $rawContent;
+    }
+
+    /**
      * Will generate a separate file containing a html list of all versions a documentation has
      *
      * @param array  $versions       Array of versions
@@ -214,9 +272,7 @@ class Compiler
         // Build up the html
         $html = '<ul role="navigation" class="nav sf-menu">
         <li class="dropdown sf-with-ul"><a href="#" data-toggle="dropdown" class="dropdown-toggle sf-with-ul">Versions
-        <span class="sf-sub-indicator">
-                <i class="icon-thin-arrow-down"></i>
-            </span></a>
+        <span class="sf-sub-indicator fa fa-angle-down"></span></a>
         <ul id="' . $this->config->getValue(Config::VERSION_SWITCHER_FILE_NAME) . '" class="dropdown-menu">';
         foreach ($versions as $version) {
 
