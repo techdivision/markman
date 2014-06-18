@@ -1,5 +1,6 @@
 {
     "path-modifier": "docs",
+    "project-site": "www.appserver.io",
     "navigation-headings-level": "2",
     "project-name":"unknown",
     "file-mapping": {

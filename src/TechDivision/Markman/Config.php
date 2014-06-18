@@ -117,7 +117,7 @@ class Config
         $this->setValue(self::MIN_TIME_INTERVAL, 5);
 
         // Per default the project site will be google
-        $this->setValue(self::PROJECT_SITE, 'google.com');
+        $this->setValue(self::PROJECT_SITE, 'www.google.com');
     }
 
     /**

@@ -181,6 +181,7 @@ class Compiler
 
             // If the file has a markdown extension we will compile it, if it is something we have to preserve we
             // will do so, if not we will skip it
+            $rawContent = '';
             if (isset($this->allowedExtensions[$file->getExtension()])) {
 
                 // Do the compilation
@@ -195,17 +196,7 @@ class Compiler
             }
 
             // Create the html content. We will need the reverse path of the current file here.
-            // We have to differ if we are in an index file or not, if so we have to go a level
-            // deeper as the actual path.
             $reversePath = $fileUtil->generateReversePath($targetFile, 1);
-            if (ltrim(strrchr($targetFile, DIRECTORY_SEPARATOR), DIRECTORY_SEPARATOR) === $this->config->getValue(Config::INDEX_FILE_NAME)) {
-
-                $navigationBase = ltrim(strstr($reversePath, DIRECTORY_SEPARATOR), DIRECTORY_SEPARATOR) . $currentVersion . '/';
-
-            } else {
-
-                $navigationBase = $reversePath . $currentVersion . '/';
-            }
 
             // Now fill the template a last time and retrieve the complete template
             $content =  $this->template->getTemplate(
@@ -213,7 +204,7 @@ class Compiler
                     '{version-switcher-element}' => $versionSwitcherContent,
                     '{content}' => $rawContent,
                     '{relative-base-url}' => $reversePath . Template::VENDOR_DIR,
-                    '{navigation-base}' =>  $navigationBase,
+                    '{navigation-base}' =>  '',
                     '{version-switch-base}' => $reversePath,
                     '{version-switch-file}' => $targetFile
                 )

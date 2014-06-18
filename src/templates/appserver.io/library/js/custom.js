@@ -13,7 +13,9 @@
 $(document).ready(function () {
 
     // Some "globals" we might need
-    var projectName = $("a.navbar-brand").text();
+    var currentVersion = $('li.active').attr('node');
+    var currentUri = window.location.href.toString().split(window.location.host)[1];
+    var uriPrefix = currentUri.substr(0, currentUri.indexOf(currentVersion));
 
     /**
      * We have to configure and initialise the multi push menu
@@ -26,11 +28,13 @@ $(document).ready(function () {
         mode: 'cover',
         collapsed: true,
         onGroupItemClick: function () {
-            var itemHref = arguments[2].find('a:first').attr("href").replace(/\.\.\//g, '');
+            // Get a clean link (without relative ../ stuff) from the button we clicked
+            var cleanLink = '/' + arguments[2].find('a:first').attr("href").replace(/\.\.\//g, '');
+            // Grab the current version wer are in
+            currentVersion = $('li.active').attr('node');
 
-            // We need to build up several links
-            var absoluteLink = "/" + "${docs.deploy.folder}" + "/" + projectName + "/" + itemHref;
-            var versionLessLink = itemHref.substring(itemHref.indexOf('/'));
+            // Build up the absolute link to
+            var absoluteLink = uriPrefix + currentVersion + cleanLink;
 
             // Load the requested documentation content
             $('#documentation').load(absoluteLink + ' #documentation');
@@ -38,7 +42,7 @@ $(document).ready(function () {
             // Change the links of the version switcher
             $('li', '#versions').find('a').each(function () {
 
-                $(this).attr("href", "/" + "${docs.deploy.folder}" + "/" + projectName + "/" + $(this).text().trim() + versionLessLink);
+                $(this).attr("href", uriPrefix + $(this).text().trim() + cleanLink);
             });
 
             // Scroll to top to show the new content
@@ -51,11 +55,10 @@ $(document).ready(function () {
             // Scroll to top to show the new content
             $('html, body').animate({scrollTop: 0}, 0);
             // fetch the current and spilt in array
-            var hrefArray = $(location).attr('href').split("/");
+            var hrefArray = window.location.href.toString().split(window.location.host)[1].split("/");
             // the elements count
             var count = hrefArray.length;
-            // the new absoluteLink
-            var absoluteLink = hrefArray[0] + "//";
+
 
             // Shorten the new url about 2 url hierarchies if we are in an index file, if not just by one hierarchy
             var shortenBy = 0;
@@ -68,8 +71,9 @@ $(document).ready(function () {
                 shortenBy = 1;
             }
 
-            // Do the actual shortening
-            for (var i = 2; i < (count - shortenBy); i++) {
+            // Do the actual shortening with a new absoluteLink
+            var absoluteLink = '';
+            for (var i = 0; i < (count - shortenBy); i++) {
                 absoluteLink += hrefArray[i] + "/";
             }
             absoluteLink += 'index.html';
@@ -78,12 +82,12 @@ $(document).ready(function () {
             $('#documentation').load(absoluteLink + ' #documentation');
 
             // Build up the versionless link for the version switcher
-            var versionLessLink = absoluteLink.substring(absoluteLink.indexOf(projectName + '/'));
-            versionLessLink = versionLessLink.substring(versionLessLink.indexOf('/', projectName.length + 2));
+            var versionLessLink = absoluteLink.substring(absoluteLink.indexOf(currentVersion) + currentVersion.length);
 
             // Change the links of the version switcher
             $('li', '#versions').find('a').each(function () {
-                $(this).attr("href", "/" + "${docs.deploy.folder}" + "/" + projectName + "/" + $(this).text().trim() + versionLessLink);
+
+                $(this).attr("href", uriPrefix + $(this).text().trim() + versionLessLink);
             });
 
             // Change the URL of the browser
