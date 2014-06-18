@@ -230,7 +230,7 @@ class Compiler
             }
 
             // Now comes the rest of the html
-            $html .= ' style="display: none;" node="' . $version->getName() . '">
+            $html .= ' node="' . $version->getName() . '">
             <a href="{version-switch-base}' .
                 $version->getName() . '{version-switch-file}" class="sf-with-ul">' . $version->getName() . '
                 </a></li>';
