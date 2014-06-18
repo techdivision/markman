@@ -30,6 +30,10 @@ body {
     outline: none;
 }
 
+a {
+    color: #fff;
+}
+
 a.toplink {
     font-size: 14px;
     color: #666;
@@ -44,8 +48,12 @@ a.toplink:hover {
     padding-top: 5px;
 }
 
-.dropdown-toggle {
-    height: 100%;
+a.dropdown-toggle {
+    font-size: 16px;
+}
+
+a.dropdown-toggle {
+    border-bottom: 3px solid #212121;
 }
 
 .dropdown-toggle:hover {
@@ -90,7 +98,7 @@ a.dropdown-toggle:hover {
 }
 
 .navbar-default .dropdown-menu > .active > a {
-    background-color: #004b63;
+    background-color: #30d5f5;
 }
 
 .nav .open > a:focus {

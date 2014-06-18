@@ -30,7 +30,7 @@ $(document).ready(function () {
 
             // We need to build up several links
             var absoluteLink = "/" + "${docs.deploy.folder}" + "/" + projectName + "/" + itemHref;
-            var versionLessLink = itemHref.split('/')[1];
+            var versionLessLink = itemHref.substring(itemHref.indexOf('/'));
 
             // Load the requested documentation content
             $('#documentation').load(absoluteLink + ' #documentation');
