@@ -16,12 +16,14 @@
  * @link      http://www.techdivision.com/
  */
 
-namespace TechDivision\Markman;
+namespace TechDivision\Markman\Compilers;
 
+use TechDivision\Markman\Compilers\Post\UsabilityPostCompiler;
 use TechDivision\Markman\Compilers\Pre\GithubPreCompiler;
 use TechDivision\Markman\Utils\File;
 use TechDivision\Markman\Utils\Parsedown;
 use TechDivision\Markman\Utils\Template;
+use TechDivision\Markman\Config;
 
 /**
  * TechDivision\Markman\Compiler
@@ -36,7 +38,7 @@ use TechDivision\Markman\Utils\Template;
  * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
  * @link      http://www.techdivision.com/
  */
-class Compiler
+class Compiler extends AbstractCompiler
 {
     /**
      * The actual compiler
@@ -59,13 +61,6 @@ class Compiler
      * @var array $preservedExtensions
      */
     protected $preservedExtensions;
-
-    /**
-     * An instance of the configuration
-     *
-     * @var \TechDivision\Markman\Config $config
-     */
-    protected $config;
 
     /**
      * A list of compiler which have to run prior to this one
@@ -107,8 +102,11 @@ class Compiler
         // @TODO add a more general compiler handling
         if ($this->config->getValue(Config::LOADER_HANDLER) === 'github') {
 
-            $this->preCompilers = array(new GithubPreCompiler());
+            $this->preCompilers = array(new GithubPreCompiler($config));
         }
+
+        // A post-compiler we always need is the usability one
+        $this->postCompilers[] = new UsabilityPostCompiler($config);
     }
 
     /**
@@ -159,10 +157,11 @@ class Compiler
 
         // We do not have to read the version switcher so many times
         $versionSwitcherContent = file_get_contents(
-        $this->config->getValue(Config::BUILD_PATH) . DIRECTORY_SEPARATOR .
-        $this->config->getValue(Config::PROJECT_NAME) . DIRECTORY_SEPARATOR .
-        $currentVersion . DIRECTORY_SEPARATOR .
-        $this->config->getValue(Config::VERSION_SWITCHER_FILE_NAME) . '.html');
+            $this->config->getValue(Config::BUILD_PATH) . DIRECTORY_SEPARATOR .
+            $this->config->getValue(Config::PROJECT_NAME) . DIRECTORY_SEPARATOR .
+            $currentVersion . DIRECTORY_SEPARATOR .
+            $this->config->getValue(Config::VERSION_SWITCHER_FILE_NAME) . '.html'
+        );
 
         // Compile all the files
         $fileUtil = new File();

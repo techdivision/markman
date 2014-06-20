@@ -57,6 +57,9 @@ $(document).ready(function () {
             // Change the URL of the browser
             window.history.pushState("string", "Title", absoluteLink);
         },
+        onItemClick: function () {
+            scrollToAnchor(arguments[2].find('a:first').attr("href"));
+        },
         onBackItemClick: function () {
             // Scroll to top to show the new content
             $('html, body').animate({scrollTop: 0}, 0);
@@ -119,6 +122,17 @@ $(document).ready(function () {
      * We have to initialise the superfish menu used for the version switcher
      */
     $('ul.sf-menu').superfish();
+
+    /**
+     * Will scroll to a certain anchor passed to the function
+     *
+     * @param aid The anchor in a jquery-selector format, e.g. #anchor
+     */
+    function scrollToAnchor(aid){
+        var aTag = $(aid);
+        var offSet = aTag.offset().top - 50;
+        $('html,body').animate({scrollTop: offSet},'fast');
+    }
 });
 
 /**

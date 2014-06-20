@@ -8,7 +8,7 @@
  *
  * PHP version 5
  *
- * @category   Tools
+ * @category   Appserver
  * @package    TechDivision_Markman
  * @subpackage Compilers
  * @author     Bernhard Wick <b.wick@techdivision.com>
@@ -17,16 +17,16 @@
  * @link       http://www.techdivision.com/
  */
 
-namespace TechDivision\Markman\Compilers\Pre;
+namespace TechDivision\Markman\Compilers;
 
-use TechDivision\Markman\Compilers\AbstractCompiler;
+use TechDivision\Markman\Config;
 
 /**
- * \TechDivision\Markman\Compilers\Pre\GithubPreCompiler
+ * TechDivision\Markman\Compilers\AbstractCompiler
  *
- * Is used to Pre-compile Github files, as they might not resolve to proper html
+ * Abstract base class for compilers
  *
- * @category   Tools
+ * @category   Appserver
  * @package    TechDivision_Markman
  * @subpackage Compilers
  * @author     Bernhard Wick <b.wick@techdivision.com>
@@ -34,17 +34,23 @@ use TechDivision\Markman\Compilers\AbstractCompiler;
  * @license    http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
  * @link       http://www.techdivision.com/
  */
-class GithubPreCompiler extends AbstractCompiler
+abstract class AbstractCompiler
 {
     /**
-     * Will compile a Github style md by removing certain Github specialities
+     * An instance of the configuration
      *
-     * @param string $md The text to compile
-     *
-     * @return string
+     * @var \TechDivision\Markman\Config $config
      */
-    public function compile($md)
+    protected $config;
+
+    /**
+     * Default constructor
+     *
+     * @param \TechDivision\Markman\Config $config The project's configuration instance
+     */
+    public function __construct(Config $config)
     {
-        return str_replace(array('(<', '>)'), array('(', ')'), $md);
+        // Save the configuration
+        $this->config = $config;
     }
 }

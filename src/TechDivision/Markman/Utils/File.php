@@ -64,8 +64,9 @@ class File
     /**
      * Will recursively copy a directory path
      *
-     * @param string  $src Source path to copy
-     * @param string  $dst Destination path to copy to
+     * @param string $src Source path to copy
+     * @param string $dst Destination path to copy to
+     *
      * @return bool
      */
     public function recursiveCopy($src, $dst)
@@ -114,7 +115,7 @@ class File
         $files = new \RecursiveIteratorIterator($iterator, \RecursiveIteratorIterator::CHILD_FIRST);
 
         // Iterator over all child nodes and delete them all
-        foreach($files as $file) {
+        foreach ($files as $file) {
 
             // Do not delete the meta-nodes "." and ".."
             if ($file->getFilename() === '.' || $file->getFilename() === '..') {
@@ -123,7 +124,7 @@ class File
             }
 
             // If we got a directory remove it, if we got a file unlink it
-            if ($file->isDir()){
+            if ($file->isDir()) {
 
                 // Remove the directory
                 rmdir($file->getRealPath());
