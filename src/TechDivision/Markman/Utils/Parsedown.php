@@ -96,7 +96,4 @@ class Parsedown extends \Parsedown
         // Return a plain array without the level sub-array structure
         return array_shift($headings);
     }
-
 }
-
- 

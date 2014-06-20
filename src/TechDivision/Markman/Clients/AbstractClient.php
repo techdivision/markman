@@ -21,7 +21,7 @@ namespace TechDivision\Markman\Clients;
 
 use TechDivision\Markman\Config;
 use TechDivision\Markman\Loader;
-use TechDivision\Markman\Compiler;
+use TechDivision\Markman\Compilers\Compiler;
 use TechDivision\Markman\Interfaces\ClientInterface;
 use TechDivision\Markman\Utils\File;
 
