@@ -88,16 +88,6 @@ class Config
             self::HANDLER_STRING
         );
 
-        // We have to load the configuration file. If there is none given we will load the default one
-        if ($configFilePath === null) {
-
-            $this->load(__DIR__ . DIRECTORY_SEPARATOR . self::DEFAULT_CONFIG_FILE, false);
-
-        } else {
-
-            $this->load($configFilePath);
-        }
-
         // We at least need to know which dir to download to and build in
         $basePath = __DIR__ . DIRECTORY_SEPARATOR . '..' .
             DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
@@ -117,7 +107,17 @@ class Config
         $this->setValue(self::MIN_TIME_INTERVAL, 5);
 
         // Per default the project site will be google
-        $this->setValue(self::PROJECT_SITE, 'www.google.com');
+        $this->setValue(self::PROJECT_SITE, 'http://www.google.com');
+
+        // We have to load the configuration file. If there is none given we will load the default one
+        if ($configFilePath === null) {
+
+            $this->load(__DIR__ . DIRECTORY_SEPARATOR . self::DEFAULT_CONFIG_FILE, false);
+
+        } else {
+
+            $this->load($configFilePath);
+        }
     }
 
     /**
