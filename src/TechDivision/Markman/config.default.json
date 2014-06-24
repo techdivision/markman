@@ -2,7 +2,7 @@
     "path-modifier": "docs",
     "project-site": "http://www.appserver.io",
     "navigation-headings-level": "2",
-    "project-name":"unknown",
+    "project-name":"appserver.io",
     "file-mapping": {
         "README.md" : "index.html"
     }

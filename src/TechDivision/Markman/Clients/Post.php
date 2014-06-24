@@ -51,15 +51,19 @@ class Post extends AbstractClient
     {
         // If we do not get GitHub JSON we will fail
         if (!isset($args) || ($data = json_decode($args)) === null ||
-            !isset($data->repository) || !isset($data->repository->full_name)) {
+            !isset($data->repository) || !isset($data->repository->name) ||
+            !isset($data->repository->owner) || !isset($data->repository->owner->name)) {
 
             throw new \Exception('Did not get any useful data within this POST request');
         }
 
+        // We have to get the connection string here
+        $connectionString = $data->repository->owner->name . '/' . $data->repository->name;
+
         // Get a config instance
         $config = new Config();
         $config->setValue(Config::LOADER_HANDLER, 'github');
-        $config->setValue(Config::HANDLER_STRING, $data->repository->full_name);
+        $config->setValue(Config::HANDLER_STRING, $connectionString);
 
         // Validate the configuration. We do not have to catch any exceptions, the calling script does already
         $config->validate();
