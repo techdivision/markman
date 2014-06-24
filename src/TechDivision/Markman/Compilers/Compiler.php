@@ -178,43 +178,54 @@ class Compiler extends AbstractCompiler
                 $targetFile = str_replace($haystacks, $this->config->getValue(Config::FILE_MAPPING), $targetFile);
             }
 
-            // If the file has a markdown extension we will compile it, if it is something we have to preserve we
-            // will do so, if not we will skip it
-            $rawContent = '';
-            if (isset($this->allowedExtensions[$file->getExtension()])) {
+            // If we have to preserve the file we do not want to compile nor do we want to have it embedded in
+            // the template
+            if (isset($this->preservedExtensions[strtolower($file->getExtension())])) {
 
-                // Do the compilation
-                $rawContent = $this->compileFile($file);
+                // We will only copy the file without altering its content
+                $fileUtil->fileForceCopy($file, $pathPrefix . $targetFile);
 
-                // Now change the extension for the ones not already covered by any file mapping
-                $targetFile = str_replace($file->getExtension(), 'html', $targetFile);
+            } else {
 
-            } elseif (!isset($this->preservedExtensions[strtolower($file->getExtension())])) {
+                // If the file has a markdown extension we will compile it, if it is something we have to preserve we
+                // will do so, if not we will skip it
+                $rawContent = '';
+                if (isset($this->allowedExtensions[$file->getExtension()])) {
 
-                continue;
+                    // Do the compilation
+                    $rawContent = $this->compileFile($file);
+
+                    // Now change the extension for the ones not already covered by any file mapping
+                    $targetFile = str_replace($file->getExtension(), 'html', $targetFile);
+
+                } elseif (!isset($this->preservedExtensions[strtolower($file->getExtension())])) {
+
+                    continue;
+
+                }
+
+                // Create the html content. We will need the reverse path of the current file here.
+                $reversePath = $fileUtil->generateReversePath($targetFile, 1);
+
+                // Now fill the template a last time and retrieve the complete template
+                $content =  $this->template->getTemplate(
+                    array(
+                        '{version-switcher-element}' => $versionSwitcherContent,
+                        '{content}' => $rawContent,
+                        '{relative-base-url}' => $reversePath . Template::VENDOR_DIR,
+                        '{navigation-base}' =>  '',
+                        '{version-switch-base}' => $reversePath,
+                        '{version-switch-file}' => $targetFile
+                    )
+                );
+
+                // Clear the file specific changes of the template
+                $this->template->clearTemplate();
+
+                // Save the processed (or not) content to a file.
+                // Recreate the path the file originally had
+                $fileUtil->fileForceContents($pathPrefix . $targetFile, $content);
             }
-
-            // Create the html content. We will need the reverse path of the current file here.
-            $reversePath = $fileUtil->generateReversePath($targetFile, 1);
-
-            // Now fill the template a last time and retrieve the complete template
-            $content =  $this->template->getTemplate(
-                array(
-                    '{version-switcher-element}' => $versionSwitcherContent,
-                    '{content}' => $rawContent,
-                    '{relative-base-url}' => $reversePath . Template::VENDOR_DIR,
-                    '{navigation-base}' =>  '',
-                    '{version-switch-base}' => $reversePath,
-                    '{version-switch-file}' => $targetFile
-                )
-            );
-
-            // Clear the file specific changes of the template
-            $this->template->clearTemplate();
-
-            // Save the processed (or not) content to a file.
-            // Recreate the path the file originally had
-            $fileUtil->fileForceContents($pathPrefix . $targetFile, $content);
         }
     }
 

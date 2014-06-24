@@ -62,6 +62,23 @@ class File
     }
 
     /**
+     * Will copy a file to a certain path even if it does not exist
+     *
+     * @param string $sourceFile      The file to copy
+     * @param string $destinationFile Target file we want to write to
+     *
+     * @return integer
+     */
+    public function fileForceCopy($sourceFile, $destinationFile)
+    {
+        // Use fileForceContent to create the file complete with its path
+        $this->fileForceContents($destinationFile, '');
+
+        // Now copy the file as the path already exists
+        return copy($sourceFile, $destinationFile);
+    }
+
+    /**
      * Will recursively copy a directory path
      *
      * @param string $src Source path to copy
