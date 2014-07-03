@@ -72,6 +72,8 @@ class Config
     const PATH_MODIFIER = 'PATH_MODIFIER';
     const NAVIGATION_HEADINGS_LEVEL = 'NAVIGATION_HEADINGS_LEVEL';
     const INDEX_FILE_NAME = 'INDEX_FILE_NAME';
+    const PROCESSED_EXTENSIONS = 'PROCESSED_EXTENSIONS';
+    const PRESERVED_EXTENSIONS = 'PRESERVED_EXTENSIONS';
 
     /**
      * Default constructor.
@@ -109,6 +111,10 @@ class Config
         // Per default the project site will be google
         $this->setValue(self::PROJECT_SITE, 'http://www.google.com');
 
+        // Preset the processed and preserved extensions
+        $this->setValue(self::PROCESSED_EXTENSIONS, array('md', 'markdown'));
+        $this->setValue(self::PRESERVED_EXTENSIONS, array('png', 'jpg', 'jpeg', 'svg', 'css', 'html', 'phtml'));
+
         // We have to load the configuration file. If there is none given we will load the default one
         if ($configFilePath === null) {
 
@@ -142,6 +148,41 @@ class Config
             // Set the value nethertheless
             $this->values[$valueName] = $value;
         }
+    }
+
+    /**
+     * Extends a value by specific content. If the value is an array it will be merged, otherwise it will be
+     * string-concatinated to the end of the current value
+     *
+     * @param string $valueName The value to extend
+     * @param string $value     The actual content for the value we want to add to the original
+     *
+     * @return void
+     */
+    public function extendValue($valueName, $value)
+    {
+        // Get the original value
+        $originalValue = $this->getValue($valueName);
+
+        // If we got an array
+        $newValue = '';
+        if (is_array($value)) {
+
+            if (is_array($originalValue)) {
+
+                $newValue = array_merge($originalValue, $value);
+
+            } else {
+
+                $newValue = array_merge(array($originalValue), $value);
+            }
+
+        } else {
+
+            $newValue = $originalValue . $value;
+        }
+
+        $this->setValue($valueName, $newValue);
     }
 
     /**

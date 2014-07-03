@@ -50,6 +50,9 @@ class UsabilityPostCompiler extends AbstractCompiler
         // Add anchors into the headings
         $html = $this->addAnchors($html);
 
+        // Change referenced markdown files into html references
+        $html = $this->changeReferenceType($html);
+
         return $html;
     }
 
@@ -72,7 +75,7 @@ class UsabilityPostCompiler extends AbstractCompiler
         $matches = array();
         preg_match_all('/<h' . $headingsLevel . '>(.+)<\/h' . $headingsLevel . '>/', $html, $matches);
 
-        // No go over the second part of matches and build up the replacements for later
+        // Now go over the second part of matches and build up the replacements for later
         foreach ($matches[1] as $key => $match) {
 
             $matches[1][$key] = '<h' . $headingsLevel . ' id="' . $fileUtil->headingToFilename($match) .
@@ -81,5 +84,40 @@ class UsabilityPostCompiler extends AbstractCompiler
 
         // Now make the actual replacement
         return str_replace($matches[0], $matches[1], $html);
+    }
+
+    /**
+     * Will change any links and references to markdown files into links to the related html file
+     *
+     * @param string $html The html to process
+     *
+     * @return string
+     */
+    protected function changeReferenceType($html)
+    {
+        // Iterate over all processed file extensions and change them
+        foreach ($this->config->getValue(Config::PROCESSED_EXTENSIONS) as $processedExtension) {
+
+            // Search for occurences
+            $matches = array();
+            preg_match_all('/href=.(.+)\.' . $processedExtension . '/', $html, $matches);
+
+            // Prepare the actual switching, also add a jquery load to it
+            $replacements = array();
+            foreach ($matches[0] as $key => $match) {
+
+                $replacements[] = 'target="_blank" href="' . $matches[1][$key] .'.html';
+            }
+
+
+            // Now make the actual replacement
+            if (isset($matches[0])) {
+
+                $html = str_replace($matches[0], $replacements, $html);
+            }
+        }
+
+        // Return the final result
+        return $html;
     }
 }

@@ -91,8 +91,8 @@ class Compiler extends AbstractCompiler
         $this->template = new Template($config);
 
         // Prefill the allowed and preserved extensions
-        $this->allowedExtensions = array_flip(array('md', 'markdown'));
-        $this->preservedExtensions = array_flip(array('png', 'jpg', 'jpeg', 'svg', 'css', 'html', 'phtml'));
+        $this->allowedExtensions = array_flip($this->config->getValue(Config::PROCESSED_EXTENSIONS));
+        $this->preservedExtensions = array_flip($this->config->getValue(Config::PRESERVED_EXTENSIONS));
 
         // We might want to add some pre- or post-compilers to our stack, based on what kind of configuration we got
         $this->preCompilers = array();
