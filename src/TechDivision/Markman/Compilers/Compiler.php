@@ -371,7 +371,7 @@ class Compiler extends AbstractCompiler
                 // Clean the last path segment as we do need it within this loop
                 $nodePath = str_replace($node . DIRECTORY_SEPARATOR, '', $nodePath);
 
-            } elseif ($node->isFile()) {
+            } elseif ($node->isFile() && isset($this->allowedExtensions[$node->getExtension()])) {
                 // A file is always a leaf, so it cannot be an ul element
 
                 // We will skip index files as actual leaves
