@@ -45,17 +45,13 @@ class File
      */
     public function fileForceContents($path, $contents)
     {
-        // Split the path into pieces so we can iterate over them
-        $parts = explode(DIRECTORY_SEPARATOR, $path);
-        $file = array_pop($parts);
-        $path = '';
+        // Clean the file from the path
+        $file = strrchr($path, DIRECTORY_SEPARATOR);
+        $path = str_replace($file, '', $path);
+        $file = ltrim($file, DIRECTORY_SEPARATOR);
 
-        // Iterate over the path pieces and build the path up directory for directory
-        foreach ($parts as $part) {
-            if (!is_dir($path .= DIRECTORY_SEPARATOR . $part)) {
-                mkdir($path);
-            }
-        }
+        // Make sure the path exists
+        $this->pathForceExistence($path);
 
         // Finally create our file and fill in the content
         return file_put_contents($path . DIRECTORY_SEPARATOR . $file, $contents);
@@ -79,6 +75,30 @@ class File
     }
 
     /**
+     * Will create a directory path independent from its depth
+     *
+     * @param string $path A directory only path
+     * 
+     * @return bool
+     */
+    public function pathForceExistence($path)
+    {
+        // Split the path into pieces so we can iterate over them
+        $parts = explode(DIRECTORY_SEPARATOR, $path);
+        $path = '';
+
+        // Iterate over the path pieces and build the path up directory for directory
+        foreach ($parts as $part) {
+            if (!is_dir($path .= DIRECTORY_SEPARATOR . $part)) {
+                mkdir($path);
+            }
+        }
+
+        // Still here? Sounds good
+        return true;
+    }
+
+    /**
      * Will recursively copy a directory path
      *
      * @param string $src Source path to copy
@@ -94,16 +114,8 @@ class File
             return false;
         }
 
-        // Split the path into pieces so we can iterate over them
-        $parts = explode(DIRECTORY_SEPARATOR, $dst);
-        $path = '';
-
-        // Iterate over the path pieces and build the path up directory for directory
-        foreach ($parts as $part) {
-            if (!is_dir($path .= DIRECTORY_SEPARATOR . $part)) {
-                mkdir($path);
-            }
-        }
+        // Make sure the destination path exists
+        $this->pathForceExistence($dst);
 
         // Open the source directory to read in files
         $i = new \DirectoryIterator($src);

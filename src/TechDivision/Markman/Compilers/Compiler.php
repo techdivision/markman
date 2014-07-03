@@ -48,6 +48,13 @@ class Compiler extends AbstractCompiler
     protected $compiler;
 
     /**
+     * The template utility which helps creating the output
+     *
+     * @var \TechDivision\Markman\Utils\Template $templateUtil
+     */
+    protected $templateUtil;
+
+    /**
      * Extensions of files we will parse and regenerate using our compiler
      *
      * @var array $allowedExtensions
@@ -88,7 +95,7 @@ class Compiler extends AbstractCompiler
 
         // Get ourselves an instance of the Parsedown compiler
         $this->compiler = new \Parsedown();
-        $this->template = new Template($config);
+        $this->templateUtil = new Template($config);
 
         // Prefill the allowed and preserved extensions
         $this->allowedExtensions = array_flip($this->config->getValue(Config::PROCESSED_EXTENSIONS));
@@ -141,7 +148,7 @@ class Compiler extends AbstractCompiler
         $this->generateNavigation($tmpFilesPath, $pathPrefix);
 
         // Added version switcher and navigation elements
-        $this->template->getTemplate(
+        $this->templateUtil->getTemplate(
             array(
                 '{navigation-element}' => file_get_contents(
                     $pathPrefix .
@@ -208,7 +215,7 @@ class Compiler extends AbstractCompiler
                 $reversePath = $fileUtil->generateReversePath($targetFile, 1);
 
                 // Now fill the template a last time and retrieve the complete template
-                $content =  $this->template->getTemplate(
+                $content =  $this->templateUtil->getTemplate(
                     array(
                         '{version-switcher-element}' => $versionSwitcherContent,
                         '{content}' => $rawContent,
@@ -220,7 +227,7 @@ class Compiler extends AbstractCompiler
                 );
 
                 // Clear the file specific changes of the template
-                $this->template->clearTemplate();
+                $this->templateUtil->clearTemplate();
 
                 // Save the processed (or not) content to a file.
                 // Recreate the path the file originally had
