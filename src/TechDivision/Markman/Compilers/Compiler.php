@@ -91,8 +91,8 @@ class Compiler extends AbstractCompiler
         $this->template = new Template($config);
 
         // Prefill the allowed and preserved extensions
-        $this->allowedExtensions = array_flip(array('md', 'markdown'));
-        $this->preservedExtensions = array_flip(array('png', 'jpg', 'jpeg', 'svg', 'css', 'html', 'phtml'));
+        $this->allowedExtensions = array_flip($this->config->getValue(Config::PROCESSED_EXTENSIONS));
+        $this->preservedExtensions = array_flip($this->config->getValue(Config::PRESERVED_EXTENSIONS));
 
         // We might want to add some pre- or post-compilers to our stack, based on what kind of configuration we got
         $this->preCompilers = array();
@@ -355,18 +355,10 @@ class Compiler extends AbstractCompiler
                 // Stack up the node path as we need for out links
                 $nodePath .= $node . DIRECTORY_SEPARATOR;
 
-                // If the directory contains an index file we will link it to the dir
-                if (isset(array_flip(scandir($node->getRealPath()))[$mappedIndexFile])) {
-
-                    // In this case we have to include a link instead of a node name
-                    $nodeName = '<a href="{navigation-base}' . $linkPath . DIRECTORY_SEPARATOR .
-                        'index.html">' . $fileUtil->filenameToHeading($node) . '</a>';
-
-                } else {
-
-                    // Node name is just a beautified name
-                    $nodeName = $fileUtil->filenameToHeading($node);
-                }
+                // Build up the link structure
+                $nodeName = '<a href="{navigation-base}' . $linkPath . DIRECTORY_SEPARATOR .
+                    $this->config->getValue(Config::INDEX_FILE_NAME) . '">' . $fileUtil->filenameToHeading($node) .
+                    '</a>';
 
                 // Make a recursion with the new path
                 $out .= '<li  class="icon-thin-arrow-left" node="' . $node . '">' . $nodeName . '
@@ -379,7 +371,7 @@ class Compiler extends AbstractCompiler
                 // Clean the last path segment as we do need it within this loop
                 $nodePath = str_replace($node . DIRECTORY_SEPARATOR, '', $nodePath);
 
-            } elseif ($node->isFile()) {
+            } elseif ($node->isFile() && isset($this->allowedExtensions[$node->getExtension()])) {
                 // A file is always a leaf, so it cannot be an ul element
 
                 // We will skip index files as actual leaves
