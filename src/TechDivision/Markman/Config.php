@@ -130,7 +130,7 @@ class Config
      * Sets a value to specific content
      *
      * @param string $valueName The value to set
-     * @param string $value     The actual content for the value
+     * @param mixed  $value     The actual content for the value
      *
      * @return void
      */
@@ -165,7 +165,6 @@ class Config
         $originalValue = $this->getValue($valueName);
 
         // If we got an array
-        $newValue = '';
         if (is_array($value)) {
 
             if (is_array($originalValue)) {
@@ -182,6 +181,7 @@ class Config
             $newValue = $originalValue . $value;
         }
 
+        // Finally set the new value
         $this->setValue($valueName, $newValue);
     }
 
