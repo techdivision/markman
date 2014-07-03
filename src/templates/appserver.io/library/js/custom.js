@@ -12,6 +12,30 @@
  */
 $(document).ready(function () {
 
+    // Ajax default settings used for error handling on client side
+    $.ajaxSetup({
+        timeout: 3000,
+        error:function(x,e){
+            if('parsererror'==e) {
+                $('#documentation').html('<h2 class="error">Sorry, we ran into a technical problem (parse error). Please try again...</h2>');
+            } else if('timeout'==e) {
+                $('#documentation').html('<h2 class="warning">Request timed out. Please try again...</h2>');
+            }
+            else if ( "status" in x ) {
+                if(0 == x.status){
+                    $('#documentation').html('<h2 class="error">You are offline! Please check your network.</h2>');
+                }else if (404 == x.status){
+                    $('#documentation').html('<h2 class="warning">There is no documentation here (404), please look further ...</h2>');
+                }else if(500 == x.status){
+                    $('#documentation').html('<h2 class="error">Sorry, we ran into a technical problem (500). Please try again...</h2>');
+                }
+            }
+            else {
+                $('#documentation').html('<h2 class="error">Sorry, we ran into a technical problem (unknown error). Please try again...</h2>');
+            }
+        }
+    });
+
     // Some "globals" we might need
     var currentVersion = $('li.active').attr('node');
     var currentUri = window.location.href.toString().split(window.location.host)[1];
@@ -67,7 +91,6 @@ $(document).ready(function () {
             var hrefArray = window.location.href.toString().split(window.location.host)[1].split("/");
             // the elements count
             var count = hrefArray.length;
-
 
             // Shorten the new url about 2 url hierarchies if we are in an index file, if not just by one hierarchy
             var shortenBy = 0;

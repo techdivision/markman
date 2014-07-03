@@ -355,18 +355,10 @@ class Compiler extends AbstractCompiler
                 // Stack up the node path as we need for out links
                 $nodePath .= $node . DIRECTORY_SEPARATOR;
 
-                // If the directory contains an index file we will link it to the dir
-                if (isset(array_flip(scandir($node->getRealPath()))[$mappedIndexFile])) {
-
-                    // In this case we have to include a link instead of a node name
-                    $nodeName = '<a href="{navigation-base}' . $linkPath . DIRECTORY_SEPARATOR .
-                        'index.html">' . $fileUtil->filenameToHeading($node) . '</a>';
-
-                } else {
-
-                    // Node name is just a beautified name
-                    $nodeName = $fileUtil->filenameToHeading($node);
-                }
+                // Build up the link structure
+                $nodeName = '<a href="{navigation-base}' . $linkPath . DIRECTORY_SEPARATOR .
+                    $this->config->getValue(Config::INDEX_FILE_NAME) . '">' . $fileUtil->filenameToHeading($node) .
+                    '</a>';
 
                 // Make a recursion with the new path
                 $out .= '<li  class="icon-thin-arrow-left" node="' . $node . '">' . $nodeName . '
