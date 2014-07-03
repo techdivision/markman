@@ -78,7 +78,7 @@ class File
      * Will create a directory path independent from its depth
      *
      * @param string $path A directory only path
-     * 
+     *
      * @return bool
      */
     public function pathForceExistence($path)
