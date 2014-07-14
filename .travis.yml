@@ -5,9 +5,10 @@ php:
   - 5.4
 
 before_install:
-  - pecl install pthreads-beta
+  - pecl install xdebug
   - pyrus install pear/PHP_CodeSniffer
   - phpenv rehash
+  - wget https://scrutinizer-ci.com/ocular.phar
 
 before_script:
   - composer selfupdate
@@ -15,6 +16,7 @@ before_script:
 
 script:
   - ant build
+  - php ocular.phar code-coverage:upload --format=php-clover $TRAVIS_BUILD_DIR/target/reports/unit/clover.xml
 
 notifications:
   email: info@appserver.io
