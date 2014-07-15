@@ -36,6 +36,13 @@ class MarkmanTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
+     * The config
+     *
+     * @var \TechDivision\Markman\Config
+     */
+    protected $config;
+
+    /**
      * The loader
      *
      * @var \TechDivision\Markman\Loader
@@ -49,7 +56,12 @@ class MarkmanTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->loader = new Loader('github', 'techdivision/TechDivision_AppserverDocumentation');
+        // Get a config instance
+        $this->config = new Config();
+        $this->config->setValue(Config::LOADER_HANDLER, 'github');
+        $this->config->setValue(Config::HANDLER_STRING, 'techdivision/TechDivision_AppserverDocumentation');
+        // Get a loader instance
+        $this->loader = new Loader($this->config);
     }
 
     /**
@@ -59,6 +71,7 @@ class MarkmanTest extends \PHPUnit_Framework_TestCase
      */
     public function testInstanceOf()
     {
+        $this->assertInstanceOf('\TechDivision\Markman\Config', $this->config);
         $this->assertInstanceOf('\TechDivision\Markman\Loader', $this->loader);
     }
 }
